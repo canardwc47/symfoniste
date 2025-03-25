@@ -199,8 +199,8 @@ class Sortie
 
     public function setSite(?Site $site): static
     {
-        $this->site = $site;
-
+       return $this->site = $site;
+    }
     public function getLieu(): ?Lieu
     {
         return $this->lieu;
