@@ -199,7 +199,9 @@ class Sortie
 
     public function setSite(?Site $site): static
     {
-       return $this->site = $site;
+        $this->site = $site;
+
+        return $this;
     }
     public function getLieu(): ?Lieu
     {
@@ -209,7 +211,6 @@ class Sortie
     public function setLieu(?Lieu $lieu): static
     {
         $this->lieu = $lieu;
-
 
         return $this;
     }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Les Sorties | {{ parent() }}{% endblock %}
+{% block title %}Les Sorties {% endblock %}
 
 {% block body %}
 <h2> Les Sorties !</h2>
@@ -9,10 +9,12 @@
         <li>
             <article>
                 <a
-                   title="View this wish in details">{{ sortie.nom }} - {{ sortie.infosSortie }}</a>
+                   title="View this wish in details">{{ sortie.nomSortie }} - {{ sortie.infosSortie }}</a>
             </article>
         </li>
     {% else %}
         <li>Pas de Sortie dans la bd</li>
     {% endfor %}
 </ul>
+
+{% endblock %}
