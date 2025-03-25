@@ -38,6 +38,7 @@ class Sortie
     #[ORM\JoinColumn(nullable: false)]
     private ?Etat $etat = null;
 
+
     /**
      * @var Collection<int, Participant>
      */
@@ -56,6 +57,11 @@ class Sortie
     {
         $this->participants = new ArrayCollection();
     }
+
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Lieu $lieu = null;
+
 
     public function getId(): ?int
     {
@@ -194,6 +200,16 @@ class Sortie
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+    public function getLieu(): ?Lieu
+    {
+        return $this->lieu;
+    }
+
+    public function setLieu(?Lieu $lieu): static
+    {
+        $this->lieu = $lieu;
+
 
         return $this;
     }
