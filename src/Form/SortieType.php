@@ -29,14 +29,17 @@ class SortieType extends AbstractType
             ->add('infosSortie')
             ->add('etat', EntityType::class, [
                 'class' => Etat::class,
-                'choice_label' => 'id',
+                'choice_label' => 'libelle',
                 'disabled' => true
             ])
-            ->add('participants', EntityType::class, [
+            /*Liste des participants de la sortie
+             * ->add('participants', EntityType::class, [
                 'class' => Participant::class,
                 'choice_label' => 'id',
                 'multiple' => true,
             ])
+            */
+
             ->add('organisateur', EntityType::class, [
                 'class' => Participant::class,
                 'choice_label' => 'id',
