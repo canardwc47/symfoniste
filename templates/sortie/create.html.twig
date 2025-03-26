@@ -15,7 +15,7 @@
     {{ form_row(sortieForm.infosSortie) }}
     {{ form_row(sortieForm.etat) }}
     <button type="submit" class="btn btn-sm btn-primary">
-        {{ sortieForm.vars.value.id == null ? 'Créer' : 'Modifier' }}
+        {{ sortieForm.vars.value.id == null ? 'Créer une sortie' : 'Modifier' }}
     </button>
     {{ form_end(sortieForm) }}
 {% endblock %}
