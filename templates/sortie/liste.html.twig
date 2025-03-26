@@ -26,12 +26,17 @@
                         <td>{{ sortie.nomSortie }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                        <td><span class="badge bg-primary">XXX</span> / {{ sortie.nbInscriptionsMax }}</td>
+                        <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info text-dark">{{ sortie.etat.libelle }}</span></td>
                         <td><span class="badge bg-success">XXX</span></td>
                         <td>{{ sortie.organisateur.pseudo }}</td>
                         <td>
                             <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
+                            {% if app.user %}
+                            {% if sortie.etat.libelle == 'Ouverte' %}
+                                <a href="{{ path('sortie_inscrire') }}" class="btn btn-sm btn-outline-success">S'inscrire</a>
+                            {% endif %}
+                            {% endif %}
                         </td>
                     </tr>
                 {% else %}
