@@ -8,12 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PSEUDO', fields: ['pseudo'])]
 #[UniqueEntity(fields: ['pseudo'], message: 'There is already a pseudo with this username')]
-class Participant implements UserInterface
+class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -45,6 +46,10 @@ class Participant implements UserInterface
 
     #[ORM\Column]
     private ?bool $actif = null;
+
+    // Ajouter la propriété roles
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $roles = 'ROLE_USER';  // Valeur par défaut
 
     /**
      * @var Collection<int, Sortie>
@@ -238,14 +243,16 @@ class Participant implements UserInterface
 
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        $roles[] = 'ROLE_USER'; // Ensure at least ROLE_USER
-        return array_unique($roles);
+        // La propriété $roles doit être convertie en tableau,
+        // s'il y a plusieurs rôles, tu peux les séparer par des virgules et les convertir en tableau
+        $roles = explode(',', $this->roles); // Assurez-vous que c'est un tableau
+        $roles[] = 'ROLE_USER'; // Assurez-vous que ROLE_USER est toujours présent
+        return array_unique($roles); // Évite les doublons
     }
 
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = implode(',', $roles); // Convertit les rôles en une chaîne
         return $this;
     }
 
@@ -258,4 +265,11 @@ class Participant implements UserInterface
     {
         return $this->email;
     }
+
+    public function getPassword(): ?string
+    {
+        return $this->mdp;
+    }
+
+
 }
