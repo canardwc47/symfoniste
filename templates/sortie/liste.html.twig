@@ -23,6 +23,7 @@
                 <tbody>
                 {% for sortie in sorties %}
                     <tr>
+                        <td>{{ sortie.id }}</td>
                         <td>{{ sortie.nomSortie }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
@@ -33,10 +34,20 @@
                         <td>
                             <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
                             {% if app.user %}
-                            {% if sortie.etat.libelle == 'Ouverte' %}
-                                <a href="{{ path('sortie_inscrire') }}" class="btn btn-sm btn-outline-success">S'inscrire</a>
+                                    {% if sortie.etat.libelle == 'Ouverte' %}
+                                     <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">S'inscrire</a>
+                                    {% endif %}
+                                    {% if sortie.participants.contains(app.user) %}
+                                        <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Se désister</a>
+                                    {% endif %}
+                                {% if sortie.organisateur == app.user %}
+                                    {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
+                                <a href="" class="btn btn-sm btn-outline-success">Modifier</a>
+                                <a href="" class="btn btn-sm btn-outline-success">Annuler</a>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
-                            {% endif %}
+
                         </td>
                     </tr>
                 {% else %}
