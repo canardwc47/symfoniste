@@ -3,15 +3,24 @@
 namespace App\Repository;
 
 use App\Entity\Participant;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class ParticipantRepository implements UserProviderInterface, PasswordUpgraderInterface
+class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface
 {
+
+    // Test constructeur pour vérifier si le formulaire marche
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Participant::class);
+    }
+
     /**
      * Symfony calls this method if you use features like switch_user
      * or remember_me.
