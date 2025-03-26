@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
+
+use App\Repository\ParticipantRepository;
+
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +26,28 @@ final class SortieController extends AbstractController
             'sorties' => $sorties,
         ]);
     }
+
+    #[Route('/sortie', name: 'sortie_inscrire', methods: ['GET', 'POST'])]
+    public function inscrire(
+        SortieRepository $sortieRepository,
+        ParticipantRepository $participantRepository,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $sortie = new Sortie();
+        $sortie->addParticipant($participantRepository->find(21));
+
+        $em->persist($sortie);
+        $em->flush();
+
+        $sorties = $sortieRepository->findAll();
+
+
+        return $this->render('sortie/liste.html.twig', [
+            'sorties' => $sorties,
+        ]);
+    }
+
 
     #[Route('/sortie/{id}', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
@@ -80,7 +106,6 @@ final class SortieController extends AbstractController
         //Affiche le formulaire
         return $this->render('sortie/create.html.twig', ["sortieForm" => $sortieForm]);
     }
-
 
     #[Route('/sortie/{id}/update', name: 'sortie_update', requirements: ['id' => '\d+'], methods: ['GET','POST'])]
     /*#[IsGranted ('SORTIE-EDIT', 'sortie')]*/
