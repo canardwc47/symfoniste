@@ -1,21 +1,110 @@
+{% extends 'base.html.twig' %}
+
 {% block title %}Ajoute ta sortie {% endblock %}
 
+
 {% block body %}
+
+<style>
+    label, input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px; /* Pour un espacement vertical entre les éléments */
+    }
+</style>
+
+<div>
+   {# pour afficher les add flash#}
+    {% for label, messages in app.flashes %}
+        <div class="alert alert-{{ label }}">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+<div>
     {%  if  sortieForm.vars.value.id ==null%}
         <h2>Ajoute ta sortie !</h2>
     {% else %}
         <h2>Modifie ta sortie !</h2>
     {% endif %}
+
+
     {{ form_start(sortieForm) }}
-    {{ form_row(sortieForm.nomSortie) }}
-    {{ form_row(sortieForm.dateHeureDebut) }}
-    {{ form_row(sortieForm.duree) }}
-    {{ form_row(sortieForm.dateLimiteInscription) }}
-    {{ form_row(sortieForm.nbInscriptionsMax) }}
-    {{ form_row(sortieForm.infosSortie) }}
-    {{ form_row(sortieForm.etat) }}
+
+<div class="group">
+
+    <label for="{{ field_name( sortieForm.nomSortie ) }}">Nom de la sortie: </label>
+    <input type="text"
+           id="{{ field_name( sortieForm.nomSortie ) }}"
+           name="{{ field_name( sortieForm.nomSortie ) }}"
+           value="{{ field_value( sortieForm.nomSortie ) }}"
+           placeholder="{{ field_label( sortieForm.nomSortie ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.dateHeureDebut ) }}">Date et heure de la sortie: </label>
+    <input type="date"
+           id="{{ field_name( sortieForm.dateHeureDebut ) }}"
+           name="{{ field_name( sortieForm.dateHeureDebut ) }}"
+           value="{{ field_value( sortieForm.dateHeureDebut ) }}"
+           placeholder="{{ field_label( sortieForm.dateHeureDebut ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.dateLimiteInscription ) }}">Date limite de l'inscription: </label>
+    <input type="date"
+           id="{{ field_name( sortieForm.dateLimiteInscription ) }}"
+           name="{{ field_name( sortieForm.dateLimiteInscription ) }}"
+           value="{{ field_value( sortieForm.dateLimiteInscription ) }}"
+           placeholder="{{ field_label( sortieForm.dateLimiteInscription ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.nbInscriptionsMax ) }}">Nombre de places: </label>
+    <input type="text"
+           id="{{ field_name( sortieForm.nbInscriptionsMax ) }}"
+           name="{{ field_name( sortieForm.nbInscriptionsMax ) }}"
+           value="{{ field_value( sortieForm.nbInscriptionsMax ) }}"
+           placeholder="{{ field_label( sortieForm.nbInscriptionsMax ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.duree ) }}">Durée: </label>
+    <input type="number"
+           id="{{ field_name( sortieForm.duree ) }}"
+           name="{{ field_name( sortieForm.duree ) }}"
+           value="{{ field_value( sortieForm.duree ) }}"
+           placeholder="{{ field_label( sortieForm.duree ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.infosSortie ) }}">Description et infos: </label>
+    <input type="text"
+           id="{{ field_name( sortieForm.infosSortie ) }}"
+           name="{{ field_name( sortieForm.infosSortie ) }}"
+           value="{{ field_value( sortieForm.infosSortie ) }}"
+           placeholder="{{ field_label( sortieForm.infosSortie ) }}"
+           class="form-control"
+    >
+
+    <label for="{{ field_name( sortieForm.etat ) }}">Etat: </label>
+    <input type="text"
+           id="{{ field_name( sortieForm.etat ) }}"
+           name="{{ field_name( sortieForm.etat ) }}"
+           value="{{ field_value( sortieForm.etat ) }}"
+           placeholder="{{ field_label( sortieForm.etat ) }}"
+           class="form-control"
+    >
+
+
+</div>
     <button type="submit" class="btn btn-sm btn-primary">
-        {{ sortieForm.vars.value.id == null ? 'Créer' : 'Modifier' }}
+        {{ sortieForm.vars.value.id == null ? 'Créer une sortie' : 'Modifier' }}
     </button>
+
     {{ form_end(sortieForm) }}
+</div>
 {% endblock %}
+</div>

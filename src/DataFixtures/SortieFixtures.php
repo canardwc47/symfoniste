@@ -29,7 +29,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 0; $i < 20; $i++) {
             $sortie = new Sortie();
-            $sortie->setNomSortie($faker->sentence(3));
+            $sortie->setNomSortie($faker->sentence(2));
             $sortie->setDateHeureDebut(
                 $faker->dateTimeBetween('+1 days', '+2 months')
             );
@@ -42,7 +42,8 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
             $sortie->setOrganisateur($faker->randomElement($participants));
             $sortie->setLieu($faker->randomElement($lieux));
             $sortie->setEtat($faker->randomElement($etat));
-            $sortie->setSite($faker->randomElement($sites));
+            //$sortie->setSite($faker->randomElement($sites));
+            $sortie->setSite($sortie->getOrganisateur()->getSite());
 
             $manager->persist($sortie);
         }
