@@ -77,18 +77,21 @@ final class SortieController extends AbstractController
             }
 
             $sortieForm = $this->createForm(SortieType::class, $sortie);
+            //Récupère les données du formulaire et on les injecte dans notre $sortie.
             $sortieForm->handleRequest($request);
 
             if ($sortieForm->isSubmitted() && $sortieForm->isValid()){
-                $sortie->flush();
+
+                $em->flush();
                 $this->addFlash('success', 'La mise à jour de ta sortie a été effectuée avec succès!');
+
                 return $this->redirectToRoute('sortie_liste', ['id'=> $sortie->getId()]);
             }
         return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
 }
 
         // SUPPRESSION D'UNE SORTIE  !!
- /*   #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
     {
         $sortie = $sortieRepository->find($id);
@@ -101,9 +104,10 @@ final class SortieController extends AbstractController
 //        if(!($wish->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
 //            throw $this->createAccessDeniedException("Pas possible gamin !");
 //        }
-        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
+        /*TODO:faire les accès avec les roles */
+/*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
             throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
-        }
+        }*/
         if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {
             $em->remove($sortie, true);
             $em->flush();
@@ -111,7 +115,7 @@ final class SortieController extends AbstractController
         } else {
             $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
         }
-        return $this->redirectToRoute('sortie_liste');*/
-/*    }*/
+        return $this->redirectToRoute('sortie_liste');
+   }
 
 }

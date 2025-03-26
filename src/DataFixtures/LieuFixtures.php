@@ -19,7 +19,7 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
 
         $prefix = ["Au", "The", "El", "My", "Du"];
         $adjectives = ["Fou", "Electro", "VIP", "Nocturne", "Secret", "Cosmique", "Rouge", "Noir", "Bleu", "Doré", "Fou", "Secret", "Sexy", "Famoso", "Caliente"];
-        $nouns = ["Bouffe", "Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Perroquet", "Piano", "Brasserie", "Canaille"];
+        $nouns = ["Bouffe", "Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Perroquet", "Piano", "Brasserie", "Canaille", "Loutre"];
 
 
 
