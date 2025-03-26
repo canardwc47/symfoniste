@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
+
+use App\Repository\ParticipantRepository;
+
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +26,28 @@ final class SortieController extends AbstractController
             'sorties' => $sorties,
         ]);
     }
+
+    #[Route('/sortie', name: 'sortie_inscrire', methods: ['GET', 'POST'])]
+    public function inscrire(
+        SortieRepository $sortieRepository,
+        ParticipantRepository $participantRepository,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $sortie = new Sortie();
+        $sortie->addParticipant($participantRepository->find(21));
+
+        $em->persist($sortie);
+        $em->flush();
+
+        $sorties = $sortieRepository->findAll();
+
+
+        return $this->render('sortie/liste.html.twig', [
+            'sorties' => $sorties,
+        ]);
+    }
+
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
     public function create(
         Request                $request,
