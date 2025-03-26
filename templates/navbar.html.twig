@@ -19,15 +19,21 @@
 
                 {% if app.user %}
                     <li class="nav-item">
-                        Mon Profil
+                        <a class="nav-link" href="{{ path('sortie_create') }}"
+                           title="Create">Créer une sortie</a>
                     </li>
                     <li class="nav-item">
-                        Sign out
+                        <a class="nav-link" href="{{ path('app_logout') }}"
+                           title="Sign out">Sign out</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}"
-                           title="Sign in">Sign in</a>
+                           title="Sign in">Se connecter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('') }}"
+                           title="Sign in">Mon profil</a>
                     </li>
 
                 {% endif %}
