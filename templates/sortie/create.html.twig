@@ -1,0 +1,21 @@
+{% block title %}Ajoute ta sortie {% endblock %}
+
+{% block body %}
+    {%  if  sortieForm.vars.value.id ==null%}
+        <h2>Ajoute ta sortie !</h2>
+    {% else %}
+        <h2>Modifie ta sortie !</h2>
+    {% endif %}
+    {{ form_start(sortieForm) }}
+    {{ form_row(sortieForm.nomSortie) }}
+    {{ form_row(sortieForm.dateHeureDebut) }}
+    {{ form_row(sortieForm.duree) }}
+    {{ form_row(sortieForm.dateLimiteInscription) }}
+    {{ form_row(sortieForm.nbInscriptionsMax) }}
+    {{ form_row(sortieForm.infosSortie) }}
+    {{ form_row(sortieForm.etat) }}
+    <button type="submit" class="btn btn-sm btn-primary">
+        {{ sortieForm.vars.value.id == null ? 'Créer' : 'Modifier' }}
+    </button>
+    {{ form_end(sortieForm) }}
+{% endblock %}
