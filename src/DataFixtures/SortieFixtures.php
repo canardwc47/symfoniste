@@ -9,12 +9,13 @@ use App\Entity\Site;
 use App\Entity\Sortie;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
 
 
-class SortieFixtures extends Fixture
+class SortieFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -48,4 +49,14 @@ class SortieFixtures extends Fixture
 
         $manager->flush();
     }
+
+    public function getDependencies(): array
+    {
+        return [
+            LieuFixtures::class,
+            EtatFixtures::class,
+            ParticipantFixtures::class,
+        ];
+    }
+
 }

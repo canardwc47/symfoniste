@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Sortie;
 use App\Form\SortieType;
+use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +26,8 @@ final class SortieController extends AbstractController
     public function create(
         Request                $request,
         EntityManagerInterface $em,
-        SortieRepository $sortieRepository
+        SortieRepository $sortieRepository,
+        EtatRepository $etatRepository
 
     ): Response
     {
@@ -33,6 +35,9 @@ final class SortieController extends AbstractController
         //Création de l'entité vide
         $sortie = new Sortie();
         $sortie->setOrganisateur(null);
+        $etat = $etatRepository->find(1);
+        $sortie->setEtat($etat);
+
 
         //Création du formulaire et association de l'entité vide.
 
