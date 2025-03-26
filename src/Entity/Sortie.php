@@ -162,7 +162,6 @@ class Sortie
     {
         $this->site = $site;
         return $this;
-
     }
     public function getLieu(): ?Lieu
     {
