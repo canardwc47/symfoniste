@@ -3,11 +3,27 @@
 {% block title %} Détail {{ sortie.nomSortie }} | {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="card mt-2 mb-2 w-50 m-auto" >
-        <div class="card-body">
-            <h5>{{ sortie.nomSortie }}</h5>
+    <h1>Détail de la sortie {{ sortie.nomSortie }}</h1>
 
-    </div>
+    <article class="sortie-detail">
+        <div>Nom de la sortie: {{ sortie.nomSortie }}</div>
+        <div>Date et heure de la sortie: {{ sortie.dateHeureDebut|date('d-m-Y H:i') }}</div>
+        <div>Date limite de l'inscription: {{ sortie.dateLimiteInscription|date('d-m-Y H:i') }}</div>
+        <div>Nombre de place: {{ sortie.nbInscriptionsMax }}</div>
+        <div>Durée: {{ sortie.formattedDuree }}</div>
+        <div>Description et infos: {{ sortie.infosSortie }}</div>
+       {#<div>Ville organisatrice: {{ sortie.site }}</div>}#}
+{#        <div>Lieu: {{ sortie.lieu }}</div>#}
+{#        <div>Rue: {{ lieu.rue }}</div>
+        <div>Code postal: {{ lieu.codePostal }}</div>
+        <div>Latitude: {{ lieu.latitude }}</div>
+        <div>Longitude: {{ lieu.longitude }}</div>
+        <div>Liste des participants inscrtis: {{ participant.all }}</div>#}
+
+
+    </article>
+
+
 {% endblock %}
 
 

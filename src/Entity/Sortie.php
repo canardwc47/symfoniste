@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use PhpParser\Node\Scalar\String_;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -213,5 +214,21 @@ class Sortie
         $this->organisateur = $organisateur;
 
         return $this;
+    }
+
+    public function getFormattedDuree(): String
+    {
+        $minutes= $this->duree;
+        $heures = intdiv($minutes, 60);
+        $minutesRestantes = $minutes % 60;
+
+        $dureeFormate ='';
+        if ($heures > 0) {
+            $dureeFormate.= $heures . ' heure' . ($heures > 1 ? 's' : '') . ' ';
+        }
+        if ($minutesRestantes > 0 ){
+            $dureeFormate .= $minutesRestantes . ' minute' . ($minutesRestantes > 1 ? 's' : '');
+        }
+        return $dureeFormate;
     }
 }
