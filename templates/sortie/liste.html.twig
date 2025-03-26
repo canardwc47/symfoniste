@@ -1,20 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Les Sorties {% endblock %}
+{% block title %}Les Sorties{% endblock %}
 
 {% block body %}
-<h2> Les Sorties !</h2>
-<ul>
-    {% for sortie in sorties %}
-        <li>
-            <article>
-                <a
-                   title="View this wish in details">{{ sortie.nomSortie }} - {{ sortie.infosSortie }}</a>
-            </article>
-        </li>
-    {% else %}
-        <li>Pas de Sortie dans la bd</li>
-    {% endfor %}
-</ul>
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Les Sorties !</h2>
 
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center">
+                <thead class="table-dark">
+                <tr>
+                    <th>Nom de la sortie</th>
+                    <th>Date de la sortie</th>
+                    <th>Clôture</th>
+                    <th>Inscrits / Places</th>
+                    <th>État</th>
+                    <th>Inscrit</th>
+                    <th>Organisateur</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sortie in sorties %}
+                    <tr>
+                        <td>{{ sortie.nomSortie }}</td>
+                        <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
+                        <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
+                        <td><span class="badge bg-primary">XXX</span> / {{ sortie.nbInscriptionsMax }}</td>
+                        <td><span class="badge bg-info text-dark">{{ sortie.etat.libelle }}</span></td>
+                        <td><span class="badge bg-success">XXX</span></td>
+                        <td>{{ sortie.organisateur.pseudo }}</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
