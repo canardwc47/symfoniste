@@ -34,30 +34,23 @@ class SortieType extends AbstractType implements FormTypeInterface
             ])
             ->add('nbInscriptionsMax')
             ->add('infosSortie')
-            ->add('etat', EntityType::class, [
-                'class' => Etat::class,
-                'choice_label' => 'libelle',
-                'disabled' => true
-            ])
-            /*Liste des participants de la sortie
+
+            /*
+             * Liste des participants de la sortie
              * ->add('participants', EntityType::class, [
                 'class' => Participant::class,
                 'choice_label' => 'id',
                 'multiple' => true,
             ])
-            */
-
-            ->add('organisateur', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'nom',
-            ])
-            ->add('site', EntityType::class, [
+             ->add('site', EntityType::class, [
                 'class' => Site::class,
                 'choice_label' => 'nomSite',
             ])
+            */
+
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nomLieu',
             ])
         ;
             dump($builder);
