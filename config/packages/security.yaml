@@ -18,6 +18,7 @@ security:
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: app_logout
+                target: '/sortie'
                 # where to redirect after logout
                 # target: app_any_route
 
