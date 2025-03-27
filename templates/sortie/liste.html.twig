@@ -53,7 +53,7 @@
                         </td>
 
                         <td>
-                            <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
+                            <a href='{{ path('sortie_detail', {'id': sortie.id}) }}' class="btn btn-sm btn-outline-primary">Afficher</a>
                             {% if app.user %}
                                 {% if sortie.etat.libelle == 'Ouverte' %}
                                     {% if sortie.participants.contains(app.user) %}

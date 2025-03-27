@@ -94,7 +94,6 @@ final class SortieController extends AbstractController
         Request                $request,
         EntityManagerInterface $em,
 
-
     ): Response
     {
         $sortie = new Sortie();
