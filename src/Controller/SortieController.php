@@ -12,6 +12,8 @@ use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,9 +33,43 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/sortie', name: 'sortie_inscrire', methods: ['GET', 'POST'])]
-    public function inscrire(int $id, SortieRepository $sortieRepository, EntityManagerInterface $em): Response
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function inscrire(
+        int $id,
+        SortieRepository $sortieRepository,
+        Security $security,
+        ParticipantRepository $participantRepository,
+        EntityManagerInterface $em
+    ): Response
     {
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->addParticipant($participant);
+
+        $em->persist($sortie);
+        $em->flush();
+
+        return $this->redirectToRoute('sortie_liste');
+    }
+
+
+     #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
+
+    public function desister(
+         int $id,
+         SortieRepository $sortieRepository,
+         ParticipantRepository $participantRepository,
+         Security $security,
+         EntityManagerInterface $em
+    ): Response
+    {
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->removeParticipant($participant);
         $participant = $this->getUser(); // Récupère l'utilisateur connecté (qui est un Participant)
 
         // 1️⃣ Récupère la sortie existante en base de données grâce à son ID
@@ -51,7 +87,20 @@ final class SortieController extends AbstractController
         $em->persist($sortie);
         $em->flush();
 
-        return $this->redirectToRoute('sortie_liste'); // Redirection après inscription
+        return $this->redirectToRoute('sortie_liste');
+    }
+
+
+    #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function detail(int $id, SortieRepository $sortieRepository): Response
+        /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
+    {
+        //Récupère la sortie en fonction de l'id présent dans l'url
+        $sortie = $sortieRepository->find($id);
+        if (!$sortie) {
+            throw $this->createNotFoundException('Cette sortie n\'existe pas désolé!');
+        }
+        return $this->render('sortie/detail.html.twig', ["sortie" => $sortie]);
     }
 
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
@@ -122,7 +171,8 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
 }
 
-        // SUPPRESSION D'UNE SORTIE  !!
+
+        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi!!
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
     {
