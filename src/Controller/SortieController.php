@@ -49,7 +49,7 @@ final class SortieController extends AbstractController
     }
 
 
-    #[Route('/sortie/{id}', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
         /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
     {

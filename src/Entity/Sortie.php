@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use PhpParser\Node\Scalar\String_;
+
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -20,14 +20,14 @@ class Sortie
     #[ORM\Column(length: 50)]
     private ?string $nomSortie = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateHeureDebut = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?int $duree = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateLimiteInscription = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
@@ -81,17 +81,7 @@ class Sortie
         return $this;
     }
 
-    public function getDateHeureDebut(): ?\DateTimeInterface
-    {
-        return $this->dateHeureDebut;
-    }
 
-    public function setDateHeureDebut(\DateTimeInterface $dateHeureDebut): static
-    {
-        $this->dateHeureDebut = $dateHeureDebut;
-
-        return $this;
-    }
 
     public function getDuree(): ?int
     {
@@ -105,17 +95,8 @@ class Sortie
         return $this;
     }
 
-    public function getDateLimiteInscription(): ?\DateTimeInterface
-    {
-        return $this->dateLimiteInscription;
-    }
 
-    public function setDateLimiteInscription(\DateTimeInterface $dateLimiteInscription): static
-    {
-        $this->dateLimiteInscription = $dateLimiteInscription;
 
-        return $this;
-    }
 
     public function getNbInscriptionsMax(): ?int
     {
@@ -174,6 +155,28 @@ class Sortie
         $this->lieu = $lieu;
 
 
+        return $this;
+    }
+
+    public function getDateHeureDebut(): ?\DateTimeImmutable
+    {
+        return $this->dateHeureDebut;
+    }
+
+    public function setDateHeureDebut(?\DateTimeImmutable $dateHeureDebut): Sortie
+    {
+        $this->dateHeureDebut = $dateHeureDebut;
+        return $this;
+    }
+
+    public function getDateLimiteInscription(): ?\DateTimeImmutable
+    {
+        return $this->dateLimiteInscription;
+    }
+
+    public function setDateLimiteInscription(?\DateTimeImmutable $dateLimiteInscription): Sortie
+    {
+        $this->dateLimiteInscription = $dateLimiteInscription;
         return $this;
     }
 
