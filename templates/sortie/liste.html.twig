@@ -45,7 +45,12 @@
                                 <span class="badge bg-success">Oui</span>
                             {% endif %}
                         </td>
-                        <td>{{ sortie.organisateur.pseudo }}</td>
+                        
+                        <td>
+                            <a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
+                                {{ sortie.organisateur.pseudo }}
+                            </a>
+                        </td>
 
                         <td>
                             <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
