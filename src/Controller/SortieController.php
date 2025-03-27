@@ -12,6 +12,8 @@ use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -27,25 +29,48 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/sortie', name: 'sortie_inscrire', methods: ['GET', 'POST'])]
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function inscrire(
+        int $id,
         SortieRepository $sortieRepository,
+        Security $security,
         ParticipantRepository $participantRepository,
         EntityManagerInterface $em
     ): Response
     {
-        $sortie = new Sortie();
-        $sortie->addParticipant($participantRepository->find(21));
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->addParticipant($participant);
 
         $em->persist($sortie);
         $em->flush();
 
-        $sorties = $sortieRepository->findAll();
+        return $this->redirectToRoute('sortie_liste');
+    }
 
 
-        return $this->render('sortie/liste.html.twig', [
-            'sorties' => $sorties,
-        ]);
+     #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
+
+    public function desister(
+         int $id,
+         SortieRepository $sortieRepository,
+         ParticipantRepository $participantRepository,
+         Security $security,
+         EntityManagerInterface $em
+    ): Response
+    {
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->removeParticipant($participant);
+
+        $em->persist($sortie);
+        $em->flush();
+
+        return $this->redirectToRoute('sortie_liste');
     }
 
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
