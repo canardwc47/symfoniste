@@ -2,7 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Site;
