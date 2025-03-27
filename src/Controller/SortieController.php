@@ -2,20 +2,17 @@
 
 namespace App\Controller;
 
-use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 
-use App\Repository\LieuRepository;
 use App\Repository\ParticipantRepository;
 
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,9 +23,13 @@ final class SortieController extends AbstractController
     #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
+
+        $participant = $this->getUser();
         $sorties = $sortieRepository->findAll();
+        $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
+            'sortiesOrganisateur' => $sortiesOrganisateur
         ]);
     }
 
@@ -69,7 +70,20 @@ final class SortieController extends AbstractController
 
         $sortie = $sortieRepository->find($id);
         $sortie->removeParticipant($participant);
+        $participant = $this->getUser(); // Récupère l'utilisateur connecté (qui est un Participant)
 
+        // 1️⃣ Récupère la sortie existante en base de données grâce à son ID
+        $sortie = $sortieRepository->find($id);
+
+        // 2️⃣ Vérifie que la sortie existe
+        if (!$sortie) {
+            throw $this->createNotFoundException("Cette sortie n'existe pas.");
+        }
+
+        // 3️⃣ Ajoute l'utilisateur connecté à la liste des participants
+        $sortie->addParticipant($participant);
+
+        // 4️⃣ Sauvegarde en base de données
         $em->persist($sortie);
         $em->flush();
 
