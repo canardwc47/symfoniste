@@ -70,18 +70,7 @@ final class SortieController extends AbstractController
 
         $sortie = $sortieRepository->find($id);
         $sortie->removeParticipant($participant);
-        $participant = $this->getUser(); // Récupère l'utilisateur connecté (qui est un Participant)
 
-        // 1️⃣ Récupère la sortie existante en base de données grâce à son ID
-        $sortie = $sortieRepository->find($id);
-
-        // 2️⃣ Vérifie que la sortie existe
-        if (!$sortie) {
-            throw $this->createNotFoundException("Cette sortie n'existe pas.");
-        }
-
-        // 3️⃣ Ajoute l'utilisateur connecté à la liste des participants
-        $sortie->addParticipant($participant);
 
         // 4️⃣ Sauvegarde en base de données
         $em->persist($sortie);
@@ -110,6 +99,8 @@ final class SortieController extends AbstractController
 
     ): Response
     {
+
+        //Création de l'entité vide
         $sortie = new Sortie();
         $sortie->setOrganisateur($this->getUser());
         $etat = $em->getRepository(Etat::class)->find(1);
@@ -186,6 +177,5 @@ final class SortieController extends AbstractController
         }
         return $this->redirectToRoute('sortie_liste');
    }
-
 
 }
