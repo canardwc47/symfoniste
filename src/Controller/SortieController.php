@@ -23,9 +23,13 @@ final class SortieController extends AbstractController
     #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
+
+        $participant = $this->getUser();
         $sorties = $sortieRepository->findAll();
+        $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
+            'sortiesOrganisateur' => $sortiesOrganisateur
         ]);
     }
 
@@ -66,7 +70,20 @@ final class SortieController extends AbstractController
 
         $sortie = $sortieRepository->find($id);
         $sortie->removeParticipant($participant);
+        $participant = $this->getUser(); // Récupère l'utilisateur connecté (qui est un Participant)
 
+        // 1️⃣ Récupère la sortie existante en base de données grâce à son ID
+        $sortie = $sortieRepository->find($id);
+
+        // 2️⃣ Vérifie que la sortie existe
+        if (!$sortie) {
+            throw $this->createNotFoundException("Cette sortie n'existe pas.");
+        }
+
+        // 3️⃣ Ajoute l'utilisateur connecté à la liste des participants
+        $sortie->addParticipant($participant);
+
+        // 4️⃣ Sauvegarde en base de données
         $em->persist($sortie);
         $em->flush();
 
@@ -98,7 +115,7 @@ final class SortieController extends AbstractController
         $sorties = $sortieRepository->findAll();
         //Création de l'entité vide
         $sortie = new Sortie();
-        $sortie->setOrganisateur(null);
+        $sortie->setOrganisateur($this->getUser());
         $etat = $etatRepository->find(1);
         $sortie->setEtat($etat);
 
