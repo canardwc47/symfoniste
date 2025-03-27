@@ -6,7 +6,9 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
+
 use App\Repository\ParticipantRepository;
+
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -116,5 +118,55 @@ final class SortieController extends AbstractController
         //Affiche le formulaire
         return $this->render('sortie/create.html.twig', ["sortieForm" => $sortieForm]);
     }
+
+    #[Route('/sortie/{id}/update', name: 'sortie_update', requirements: ['id' => '\d+'], methods: ['GET','POST'])]
+    /*#[IsGranted ('SORTIE-EDIT', 'sortie')]*/
+    public function update (Sortie $sortie, Request $request, EntityManagerInterface $em): Response
+        {
+            if (!$sortie){
+                throw $sortie-> createNotFoundExecption('Cette sortie n\'existe pas désolée ');
+            }
+
+            $sortieForm = $this->createForm(SortieType::class, $sortie);
+            //Récupère les données du formulaire et on les injecte dans notre $sortie.
+            $sortieForm->handleRequest($request);
+
+            if ($sortieForm->isSubmitted() && $sortieForm->isValid()){
+
+                $em->flush();
+                $this->addFlash('success', 'La mise à jour de ta sortie a été effectuée avec succès!');
+
+                return $this->redirectToRoute('sortie_liste', ['id'=> $sortie->getId()]);
+            }
+        return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
+}
+
+        // SUPPRESSION D'UNE SORTIE  !!
+    #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
+    {
+        $sortie = $sortieRepository->find($id);
+        //s'il n'existe pas dans la bdd, on lance une erreur 404
+        if (!$sortie) {
+            throw $this->createNotFoundException('Cette sortie n\'existe pas désolé!');
+        }
+
+        //si je ne suis pas le proprio et que je ne suis pas admin alors je ne peux pas y accéder
+//        if(!($wish->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
+//            throw $this->createAccessDeniedException("Pas possible gamin !");
+//        }
+        /*TODO:faire les accès avec les roles */
+/*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
+            throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
+        }*/
+        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {
+            $em->remove($sortie, true);
+            $em->flush();
+            $this->addFlash('success', 'Ta sortie a bien été supprimée !');
+        } else {
+            $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
+        }
+        return $this->redirectToRoute('sortie_liste');
+   }
 
 }

@@ -27,6 +27,7 @@
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
                         <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
+
                         <td>
                             {% if sortie.etat.libelle == 'Créée' %}
                                 <span class="badge bg-warning text-white">{{ sortie.etat.libelle }}</span>
@@ -45,6 +46,7 @@
                             {% endif %}
                         </td>
                         <td>{{ sortie.organisateur.pseudo }}</td>
+
                         <td>
                             <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
                             {% if app.user %}
