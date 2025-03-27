@@ -29,7 +29,11 @@
                         <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info text-dark">{{ sortie.etat.libelle }}</span></td>
                         <td><span class="badge bg-success">XXX</span></td>
-                        <td>{{ sortie.organisateur.pseudo }}</td>
+                        <td>
+                            <a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
+                                {{ sortie.organisateur.pseudo }}
+                            </a>
+                        </td>
                         <td>
                             <a href="#" class="btn btn-sm btn-outline-primary">Afficher</a>
                             {% if app.user %}
