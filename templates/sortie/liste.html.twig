@@ -27,8 +27,7 @@
                 <tbody>
                 {% for sortie in sorties %}
                     <tr class="sortie" data-organisateur="{{ sortie.organisateur.id }}">
-                        <td>{{ sortie.nomSortie }}</td>
-                    <tr>
+
                         <td>{{ sortie.nomSortie }} {{ sortie.id }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
