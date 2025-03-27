@@ -8,6 +8,7 @@ use App\Entity\Participant;
 use App\Entity\Site;
 use App\Entity\Sortie;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -31,15 +32,19 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
             $sortie = new Sortie();
             $sortie->setNomSortie($faker->sentence(2));
             $sortie->setDateHeureDebut(
-                $faker->dateTimeBetween('+1 days', '+2 months')
+                DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 days', '+2 months'))
             );
             $sortie->setDuree($faker->numberBetween(30, 240));
             $sortie->setDateLimiteInscription(
-                $faker->dateTimeBetween('now', '+1 month')
+                DateTimeImmutable::createFromMutable($faker->dateTimeBetween('now', '+1 month'))
             );
             $sortie->setNbInscriptionsMax($faker->numberBetween(5, 50));
             $sortie->setInfosSortie($faker->paragraph);
             $sortie->setOrganisateur($faker->randomElement($participants));
+            $sortie->addParticipant($sortie->getOrganisateur());
+            //for ($i = 0; $i < 3; $i++) {
+            $sortie->addParticipant($faker->randomElement($participants));
+            //}
             $sortie->setLieu($faker->randomElement($lieux));
             $sortie->setEtat($faker->randomElement($etat));
             //$sortie->setSite($faker->randomElement($sites));

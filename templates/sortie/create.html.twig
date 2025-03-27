@@ -45,7 +45,7 @@
     >
 
     <label for="{{ field_name( sortieForm.dateHeureDebut ) }}">Date et heure de la sortie: </label>
-    <input type="date"
+    <input type="datetime-local"
            id="{{ field_name( sortieForm.dateHeureDebut ) }}"
            name="{{ field_name( sortieForm.dateHeureDebut ) }}"
            value="{{ field_value( sortieForm.dateHeureDebut ) }}"
@@ -54,7 +54,7 @@
     >
 
     <label for="{{ field_name( sortieForm.dateLimiteInscription ) }}">Date limite de l'inscription: </label>
-    <input type="date"
+    <input type="datetime-local"
            id="{{ field_name( sortieForm.dateLimiteInscription ) }}"
            name="{{ field_name( sortieForm.dateLimiteInscription ) }}"
            value="{{ field_value( sortieForm.dateLimiteInscription ) }}"
@@ -108,3 +108,5 @@
 </div>
 </div>
 {% endblock %}
+
+

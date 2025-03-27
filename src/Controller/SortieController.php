@@ -73,6 +73,19 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_liste');
     }
 
+
+    #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function detail(int $id, SortieRepository $sortieRepository): Response
+        /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
+    {
+        //Récupère la sortie en fonction de l'id présent dans l'url
+        $sortie = $sortieRepository->find($id);
+        if (!$sortie) {
+            throw $this->createNotFoundException('Cette sortie n\'existe pas désolé!');
+        }
+        return $this->render('sortie/detail.html.twig', ["sortie" => $sortie]);
+    }
+
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
     public function create(
         Request                $request,
@@ -141,7 +154,8 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
 }
 
-        // SUPPRESSION D'UNE SORTIE  !!
+
+        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi!!
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
     {

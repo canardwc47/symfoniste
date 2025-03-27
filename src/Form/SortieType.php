@@ -7,22 +7,29 @@ use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Site;
 use App\Entity\Sortie;
+use DateTime;
+use DateTimeImmutable;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SortieType extends AbstractType
+class SortieType extends AbstractType implements FormTypeInterface
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('nomSortie')
-            ->add('dateHeureDebut', null, [
+            ->add('dateHeureDebut', DateTimeType::class, [
                 'widget' => 'single_text',
+
+               // 'format' => 'yyyy-MM-dd HH:mm',
             ])
             ->add('duree')
-            ->add('dateLimiteInscription', null, [
+           ->add('dateLimiteInscription', null, [
                 'widget' => 'single_text',
             ])
             ->add('nbInscriptionsMax')
@@ -42,7 +49,7 @@ class SortieType extends AbstractType
 
             ->add('organisateur', EntityType::class, [
                 'class' => Participant::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
             ])
             ->add('site', EntityType::class, [
                 'class' => Site::class,
@@ -53,6 +60,7 @@ class SortieType extends AbstractType
                 'choice_label' => 'id',
             ])
         ;
+            dump($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
