@@ -7,33 +7,66 @@ use App\Entity\Site;
 use App\Entity\Sortie;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 
 class ParticipantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('nom')
-            ->add('prenom')
-            ->add('telephone')
-            ->add('email')
-            ->add('pseudo')
-            ->add('mdp')
-            ->add('administrateur')
-            ->add('actif')
-            ->add('sorties', EntityType::class, [
-                'class' => Sortie::class,
-                'choice_label' => 'id',
-                'multiple' => true,
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $participant = $event->getData();
+            if ($participant && $participant->getFilename()){
+                $participantForm = $event->getForm();
+                $participantForm->add('deleteImage', CheckboxType::class, [
+                    'required' => false,
+                    'mapped' => false,
+            ]);
+
+                $participantForm
+
+                ->add('image', FileType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image',
+                    ])
+                ],
             ])
-            ->add('site', EntityType::class, [
-                'class' => Site::class,
-                'choice_label' => 'id',
-            ])
-        ;
+                ->add('nom')
+                ->add('prenom')
+                ->add('telephone')
+                ->add('email')
+                ->add('pseudo')
+                ->add('mdp')
+                ->add('administrateur')
+                ->add('actif')
+                ->add('sorties', EntityType::class, [
+                    'class' => Sortie::class,
+                    'choice_label' => 'id',
+                    'multiple' => true,
+                ])
+                ->add('site', EntityType::class, [
+                    'class' => Site::class,
+                    'choice_label' => 'id',
+                ]);
+            }
+        });
+
     }
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {
