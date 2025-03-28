@@ -45,12 +45,14 @@ class SortieType extends AbstractType implements FormTypeInterface
                 'class' => Site::class,
                 'choice_label' => 'nomSite',
             ])
-            */
 
+            */
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
-                'choice_label' => 'nomLieu',
+                'choice_label' => 'nomVille' . ' - ' . ' nomLieu',
+
             ])
+
         ;
             dump($builder);
     }
