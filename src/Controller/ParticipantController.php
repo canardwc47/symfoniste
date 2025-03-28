@@ -5,8 +5,7 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Form\ParticipantType;
 use App\Repository\ParticipantRepository;
-use App\Service\FileUploader;
-use App\Services\Uploader;
+use App\Service\Uploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -30,7 +29,7 @@ final class ParticipantController extends AbstractController
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
-                        FileUploader $fileUploader,
+                        Uploader  $uploader,
                         UserPasswordHasherInterface $userPasswordHasher
 
     ): Response
@@ -41,19 +40,21 @@ final class ParticipantController extends AbstractController
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 
-            //traitement de l'image
-            /** @var UploadedFile $imageFile */
-
-            $imageFile = $participantForm->get('image')->getData();
-            if($imageFile){
-                $participant->setFilename($fileUploader ->upload($imageFile));
-            }
-
             $plainPassword = $participant->getMdp();
             $hashedPassword = $userPasswordHasher->hashPassword($participant, $plainPassword);
-
             $participant->setMdp($hashedPassword);
 
+            /**
+             * @var UploadedFile $image
+             */
+            $image = $participantForm->get('image')->getData();
+            if ($image) {
+                // Utilisation du service Uploader pour enregistrer l'image
+                $imageName = $uploader->save($image, $participant->getName(), $this->getParameter('participant_image_dir'));
+                $participant->setImage($imageName);  // Enregistrer le nom de l'image dans l'entité
+            }
+
+            // Sauvegarde dans la base de données
             $entityManager->persist($participant);
             $entityManager->flush();
 
@@ -61,13 +62,9 @@ final class ParticipantController extends AbstractController
         }
 
         return $this->render('participant/add.html.twig', [
-            'participant' => $participant,
-            'form' =>  $participantForm,
-            'app_image_participant_directory' => $this->getParameter('app.images_participant_directory'),
-
+            'form' => $participantForm->createView(),
         ]);
     }
-
 
 
     #[Route('/detail/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
@@ -84,7 +81,7 @@ final class ParticipantController extends AbstractController
     public function edit(Request $request,
                          Participant $participant,
                          EntityManagerInterface $entityManager,
-                         FileUploader $fileUploader
+                         Uploader $uploader
     ): Response
 
     {
@@ -94,15 +91,14 @@ final class ParticipantController extends AbstractController
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 
             $imageFile = $participantForm->get('image')->getData();
-            if(($participantForm->has('deleteImage') && $participantForm['deleteImage']->getData()) || $imageFile) {
-                $fileUploader->delete($participant->getFilename(), $this->getParameter('app.images_participant_directory'));
+
                 if ($imageFile) {
-                    $participant->setFilename($fileUploader->upload($imageFile));
+                    $participant->setFilename($uploader->upload($imageFile));
                 }
                 else{
                     $participant->setFilename(null);
                 }
-            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
@@ -113,9 +109,6 @@ final class ParticipantController extends AbstractController
             'form' => $participantForm,
         ]);
     }
-
-
-
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Participant $participant, EntityManagerInterface $entityManager): Response
