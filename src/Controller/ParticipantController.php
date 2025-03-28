@@ -33,7 +33,6 @@ final class ParticipantController extends AbstractController
                         FileUploader $fileUploader,
                         UserPasswordHasherInterface $userPasswordHasher
 
-
     ): Response
     {
         $participant = new Participant();
