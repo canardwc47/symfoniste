@@ -7,6 +7,12 @@
 
     <table class="table">
         <tbody>
+        <tr>
+            <th>Image</th>
+            <td>
+                <img src="{{ asset('image/' ~ participant.filename) }}" alt="Image de profil" width="150" height="150">
+            </td>
+        </tr>
             <tr>
                 <th>Id</th>
                 <td>{{ participant.id }}</td>
