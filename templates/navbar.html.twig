@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom shadow-sm">
     <div class="container-fluid">
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -13,45 +13,39 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
+                    <a class="btn btn-sm btn-outline-primary" href="{{ path('sortie_liste') }}"
                        title="Villes">Villes</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
+                    <a class="btn btn-sm btn-outline-primary" href="{{ path('sortie_liste') }}"
                        title="Sites">Sites</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
+                    <a class="btn btn-sm btn-outline-primary" href="{{ path('sortie_liste') }}"
                        title="Accueil">Accueil</a>
                 </li>
                 {% if app.user %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_create') }}"
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('sortie_create') }}"
                            title="Create">Créer une sortie</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_logout') }}"
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('app_logout') }}"
                            title="Sign out">Sign out</a>
                     </li>
 
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}"
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('app_login') }}"
                            title="Sign in">Se connecter</a>
                     </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href=""
-                           title="Sign in">Mon profil</a>
-                    </li>
-
 
                 {% endif %}
             </ul>

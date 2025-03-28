@@ -3,9 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+
 use App\Form\AnnulationType;
+
+use App\Form\LieuType;
+
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 
@@ -99,20 +104,18 @@ final class SortieController extends AbstractController
     public function create(
         Request                $request,
         EntityManagerInterface $em,
-
     ): Response
     {
-
         //Création de l'entité vide
         $sortie = new Sortie();
         $sortie->setOrganisateur($this->getUser());
-        $etat = $em->getRepository(Etat::class)->find(1);
+        $sortie->addParticipant($sortie->getOrganisateur());
+        $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
         $sortie->setEtat($etat);
-        $sortie->setSite($this->getUser()->getSite());
+        $sortie->setSite($sortie->getOrganisateur()->getSite());
 
 
-        //Création du formulaire et association de l'entité vide.
-
+        //Création du formulaire SORTIE et association de l'entité vide.
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
 
@@ -125,9 +128,14 @@ final class SortieController extends AbstractController
 
            return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
 
+
+
+
         }
         //Affiche le formulaire
-        return $this->render('sortie/create.html.twig', ["sortieForm" => $sortieForm]);
+        return $this->render('sortie/create.html.twig', [
+            "sortieForm" => $sortieForm->createView()
+        ]);
     }
 
     #[Route('/sortie/{id}/update', name: 'sortie_update', requirements: ['id' => '\d+'], methods: ['GET','POST'])]

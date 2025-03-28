@@ -24,9 +24,6 @@ final class ParticipantController extends AbstractController
         ]);
     }
 
-
-
-
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
