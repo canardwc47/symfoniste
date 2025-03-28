@@ -30,9 +30,8 @@ final class ParticipantController extends AbstractController
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
-                        FileUploader $fileUploader
+                        FileUploader $fileUploader,
                         UserPasswordHasherInterface $userPasswordHasher
-
 
     ): Response
     {
