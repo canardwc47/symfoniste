@@ -31,7 +31,7 @@
                         <td>{{ sortie.nomSortie }} {{ sortie.id }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                        <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
+                        <td><span class="badge bg-primary"> {{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
 
                         <td>
                             {% if sortie.etat.libelle == 'Créée' %}
