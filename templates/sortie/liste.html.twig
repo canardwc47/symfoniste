@@ -4,18 +4,18 @@
 
 {% block body %}
     <div class="container mt-4">
-        <h2 class="text-center mb-4">Les Sorties !</h2>
+    <h2 class="text-center mb-4">Les Sorties !</h2>
 
-        <label>
-            <input type="checkbox" id="filterCheckboxOrganisateur"> Afficher uniquement mes sorties organisées
-        </label>
-        <br>
+    <label>
+        <input type="checkbox" id="filterCheckboxOrganisateur"> Afficher uniquement mes sorties organisées
+    </label>
+    <br>
 
-        <label>
-            <input type="checkbox" id="filterCheckboxInscrit"> Afficher uniquement les sorties auxquelles je suis inscrit
-        </label>
+    <label>
+        <input type="checkbox" id="filterCheckboxInscrit"> Afficher uniquement les sorties auxquelles je suis inscrit
+    </label>
 
-        <div class="table-responsive">
+    <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
@@ -38,7 +38,8 @@
                 <td>{{ sortie.nomSortie }}</td>
                 <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
                 <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
+                <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span>
+                    / {{ sortie.nbInscriptionsMax }}</td>
                 <td>
                     {% if sortie.etat.libelle == 'Créée' %}
                         <span class="badge bg-warning text-white">{{ sortie.etat.libelle }}</span>
@@ -58,7 +59,8 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
+                    <a type="button" class="btn btn-outline-secondary"
+                       href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
                         {{ sortie.organisateur.pseudo }}
                     </a>
                 </td>
@@ -67,15 +69,19 @@
                     {% if app.user %}
                         {% if sortie.etat.libelle == 'Ouverte' %}
                             {% if sortie.participants.contains(app.user) %}
-                                <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Se désister</a>
+                                <a href="{{ path('sortie_desister', {'id': sortie.id}) }}"
+                                   class="btn btn-sm btn-outline-success">Se désister</a>
                             {% else %}
-                                <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">S'inscrire</a>
+                                <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
+                                   class="btn btn-sm btn-outline-success">S'inscrire</a>
                             {% endif %}
                         {% endif %}
                         {% if sortie.organisateur == app.user %}
                             {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
-                                <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-warning">Modifier</a>
-                                <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-danger">Annuler</a>
+                                <a href="{{ path('sortie_update', {'id': sortie.id}) }}"
+                                   class="btn btn-sm btn-outline-warning">Modifier</a>
+                                <a href="{{ path('sortie_delete', {'id': sortie.id}) }}"
+                                   class="btn btn-sm btn-outline-danger">Annuler</a>
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -91,27 +97,36 @@
 
     <script>
         // Filtre Organisateur
-        document.getElementById("filterCheckboxOrganisateur").addEventListener("change", function() {
+        document.getElementById("filterCheckboxOrganisateur").addEventListener("change", function () {
             let checked = this.checked;
-            let userId = {{ app.user.id }}; // ID de l'utilisateur connecté
+            //Rajout d'un if pour gérer les utilisateurs non connectés
+            {% if app.user %}
+            let userId = {{ app.user.id }}; // Récupérer l'ID de l'utilisateur connecté
 
             document.querySelectorAll(".sortie").forEach(sortie => {
                 let isOrganisateur = parseInt(sortie.getAttribute("data-organisateur")) === 1;
                 sortie.style.display = (checked && !isOrganisateur) ? "none" : "table-row";
             });
-        });
 
-        // Filtre Inscrit
-        document.getElementById("filterCheckboxInscrit").addEventListener("change", function() {
-            let checked = this.checked;
-            let userId = {{ app.user.id }}; // ID de l'utilisateur connecté
 
-            document.querySelectorAll(".sortie").forEach(sortie => {
-                let isInscrit = parseInt(sortie.getAttribute("data-inscrit")) === 1;
-                sortie.style.display = (checked && !isInscrit) ? "none" : "table-row";
+            // Filtre Inscrit
+            document.getElementById("filterCheckboxInscrit").addEventListener("change", function () {
+                let checked = this.checked;
+                let userId = {{ app.user.id }}; // ID de l'utilisateur connecté
+
+                document.querySelectorAll(".sortie").forEach(sortie => {
+                    let isInscrit = parseInt(sortie.getAttribute("data-inscrit")) === 1;
+                    sortie.style.display = (checked && !isInscrit) ? "none" : "table-row";
+                });
+
+                {% else %}
+                // Cacher les checkbox s'il n'y a pas d'utilisateur connecté
+                document.getElementById("filterCheckbox").style.display = "none";
+
+                {% endif %}
             });
         });
 
-    </script>
 
+    </script>
 {% endblock %}

@@ -32,10 +32,6 @@
                 <td>{{ participant.pseudo }}</td>
             </tr>
             <tr>
-                <th>Mdp</th>
-                <td>{{ participant.mdp }}</td>
-            </tr>
-            <tr>
                 <th>Administrateur</th>
                 <td>{{ participant.administrateur ? 'Yes' : 'No' }}</td>
             </tr>
@@ -47,7 +43,7 @@
         </tbody>
     </table>
 
-    <a href="{{ path('participant_detail', {'id': participant.id}) }}">back to list</a>
+    <a href="{{ path('sortie_liste') }}">Retour à la liste des sorties</a>
 
 {#    <a href="{{ path('edit', {'id': participant.id}) }}">edit</a>#}
 
