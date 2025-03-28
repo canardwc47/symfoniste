@@ -105,22 +105,9 @@ final class SortieController extends AbstractController
         $sortie = new Sortie();
         $sortie->setOrganisateur($this->getUser());
         $sortie->addParticipant($sortie->getOrganisateur());
-        $etat = $em->getRepository(Etat::class)->find(1);
+        $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
         $sortie->setEtat($etat);
-        $sortie->setSite($this->getUser()->getSite());
 
-        //Création du formulaire LIEU
-        $lieuForm = $this->createForm(LieuType::class);
-        $lieuForm->handleRequest($request);
-        if ($lieuForm->isSubmitted() && $lieuForm->isValid()) {
-            $lieu = $lieuForm->getData();
-            $lieu->setVille($lieu->getVille());
-            $lieu->setNomLieu($lieu->getNomLieu());
-            $lieu->setRue($lieu->getRue());
-            $lieu->setLatitude($lieu->getLatitude());
-            $lieu->setLongitude($lieu->getLongitude());
-            $sortie->setLieu($lieu);
-        }
 
         //Création du formulaire SORTIE et association de l'entité vide.
         $sortieForm = $this->createForm(SortieType::class, $sortie);
@@ -138,7 +125,6 @@ final class SortieController extends AbstractController
         }
         //Affiche le formulaire
         return $this->render('sortie/create.html.twig', [
-            "lieuForm" => $lieuForm->createView(),
             "sortieForm" => $sortieForm->createView()
         ]);
     }

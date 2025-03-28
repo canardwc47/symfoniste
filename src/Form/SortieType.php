@@ -8,6 +8,7 @@ use App\Entity\Site;
 use App\Entity\Sortie;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -49,7 +50,14 @@ class SortieType extends AbstractType implements FormTypeInterface
             */
             ->add('lieu', EntityType::class, [
                 'class' => Lieu::class,
-                'choice_label' => 'nomVille' . ' - ' . ' nomLieu',
+                'choice_label' =>  function (Lieu $lieu) {
+                    return $lieu->getVille() . ' - ' . $lieu->getNomLieu();
+                    },
+                    'query_builder' => function (EntityRepository $er) {
+        return $er->createQueryBuilder('l')
+            ->join('l.ville', 'v')
+            ->orderBy('v.nom', 'ASC'); // Make sure 'nom' is the correct property for the city name
+    },
 
             ])
 
