@@ -3,7 +3,7 @@
 {% block title %}Participant{% endblock %}
 
 {% block body %}
-    <h1>Participant</h1>
+    <h1>Profil de {{ participant.pseudo }}</h1>
 
     <table class="table">
         <tbody>
@@ -48,10 +48,14 @@
 
         </tbody>
     </table>
+    {% if participant.id == app.user.id%}
+        <a href="{{ path('participant_update', {'id': participant.id}) }}" class="btn btn-primary">Modifier mon profil</a>
+    {#{{ include('participant/_delete_form.html.twig') }}  #}
 
-    <a href="{{ path('sortie_liste') }}">Retour à la liste des sorties</a>
+    {% endif %}
 
-{#    <a href="{{ path('edit', {'id': participant.id}) }}">edit</a>#}
+    {#<a href="{{ path('sortie_liste') }}">Retour à la liste des sorties</a>#}
 
-{#    {{ include('participant/_delete_form.html.twig') }}#}
+    {#<a href="{{ path('participant_detail', {'id': participant.id}) }}">edit</a>#}
+
 {% endblock %}
