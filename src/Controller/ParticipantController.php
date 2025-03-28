@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 
@@ -27,6 +28,7 @@ final class ParticipantController extends AbstractController
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
+                        UserPasswordHasherInterface $userPasswordHasher
 
     ): Response
     {
@@ -35,6 +37,10 @@ final class ParticipantController extends AbstractController
         $participantForm->handleRequest($request);
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
+            $plainPassword = $participant->getMdp();
+            $hashedPassword = $userPasswordHasher->hashPassword($participant, $plainPassword);
+
+            $participant->setMdp($hashedPassword);
             $entityManager->persist($participant);
             $entityManager->flush();
 
