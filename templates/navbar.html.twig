@@ -33,6 +33,11 @@
                     </li>
 
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ path('participant_add') }}"
+                           title="AddParticipant">Ajouter participant</a>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
                     </li>
 
@@ -49,8 +54,9 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href=""
-                           title="Sign in">Mon profil</a>
+                           title="Profil">Mon profil</a>
                     </li>
+
 
 
                 {% endif %}
