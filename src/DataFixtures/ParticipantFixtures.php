@@ -50,7 +50,8 @@ class ParticipantFixtures extends Fixture implements DependentFixtureInterface
                 ->setAdministrateur(0)
                 ->setMdp(
                     $this->userPasswordHasher->hashPassword($participant, "123456")
-                )->setRoles(['ROLE_USER']);
+                )->setRoles(['ROLE_USER'])
+                ->setFilename(null);
 
             $manager->persist($participant);
         }
