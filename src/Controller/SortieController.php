@@ -31,12 +31,18 @@ final class SortieController extends AbstractController
     #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
-        $participant = $this->getUser();
+        $participant = $this->getUser(); // Récupère l'utilisateur connecté
         $sorties = $sortieRepository->findAll();
         $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
+        $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
+        $sortiesNonInscrit = $sortieRepository->findByNonInscrit($participant);
+
+
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
-            'sortiesOrganisateur' => $sortiesOrganisateur
+            'sortiesOrganisateur' => $sortiesOrganisateur,
+            'sortiesInscrit' => $sortiesInscrit,
+            'sortiesNonInscrit' => $sortiesNonInscrit
         ]);
 
     }
@@ -88,8 +94,6 @@ final class SortieController extends AbstractController
     }
 
 
-
-
     #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
         /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
@@ -101,11 +105,6 @@ final class SortieController extends AbstractController
         }
         return $this->render('sortie/detail.html.twig', ["sortie" => $sortie]);
     }
-
-
-
-
-
 
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
     public function create(

@@ -29,6 +29,28 @@ class SortieRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findByInscrit($participant): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.participants', 'p') // Jointure avec la table des participants
+            ->andWhere('p = :participant')
+            ->setParameter('participant', $participant)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByNonInscrit($participant): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.participants', 'p') // Jointure avec la table des participants
+            ->andWhere('p IS NULL OR p != :participant')
+            ->setParameter('participant', $participant)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Sortie[] Returns an array of Sortie objects
     //     */
