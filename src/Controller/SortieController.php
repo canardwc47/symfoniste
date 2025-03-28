@@ -107,6 +107,7 @@ final class SortieController extends AbstractController
         $sortie->addParticipant($sortie->getOrganisateur());
         $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
         $sortie->setEtat($etat);
+        $sortie->setSite($sortie->getOrganisateur()->getSite());
 
 
         //Création du formulaire SORTIE et association de l'entité vide.
