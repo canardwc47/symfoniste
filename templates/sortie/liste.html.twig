@@ -31,7 +31,7 @@
                         <td>{{ sortie.nomSortie }} {{ sortie.id }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                        <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span> / {{ sortie.nbInscriptionsMax }}</td>
+                        <td><span class="badge bg-primary"> {{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
 
                         <td>
                             {% if sortie.etat.libelle == 'Créée' %}
@@ -70,7 +70,7 @@
                                 {% if sortie.organisateur == app.user %}
                                     {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
                                         <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Modifier</a>
-                                        <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Annuler</a>
+                                        <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Annuler</a>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
