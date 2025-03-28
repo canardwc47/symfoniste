@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 
@@ -26,13 +27,12 @@ final class ParticipantController extends AbstractController
         ]);
     }
 
-
-
-
     #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
                         FileUploader $fileUploader
+                        UserPasswordHasherInterface $userPasswordHasher
+
 
     ): Response
     {
@@ -41,6 +41,7 @@ final class ParticipantController extends AbstractController
         $participantForm->handleRequest($request);
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
+
             //traitement de l'image
             /** @var UploadedFile $imageFile */
 
@@ -48,6 +49,12 @@ final class ParticipantController extends AbstractController
             if($imageFile){
                 $participant->setFilename($fileUploader ->upload($imageFile));
             }
+
+            $plainPassword = $participant->getMdp();
+            $hashedPassword = $userPasswordHasher->hashPassword($participant, $plainPassword);
+
+            $participant->setMdp($hashedPassword);
+
             $entityManager->persist($participant);
             $entityManager->flush();
 

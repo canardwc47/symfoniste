@@ -16,6 +16,19 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
+    /**
+     * @return Sortie[] Returns an array of Sortie objects
+     */
+    public function findByOrganisateur($organisateur): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.organisateur = :organisateur')
+            ->setParameter('organisateur', $organisateur)
+            ->orderBy('s.dateHeureDebut', 'DESC')// Trier par date décroissante par exemple
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Sortie[] Returns an array of Sortie objects
     //     */

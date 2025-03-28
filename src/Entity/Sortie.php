@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
 {
@@ -19,14 +20,14 @@ class Sortie
     #[ORM\Column(length: 50)]
     private ?string $nomSortie = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateHeureDebut = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
     private ?int $duree = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateLimiteInscription = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     private ?int $nbInscriptionsMax = null;
@@ -80,17 +81,7 @@ class Sortie
         return $this;
     }
 
-    public function getDateHeureDebut(): ?\DateTimeInterface
-    {
-        return $this->dateHeureDebut;
-    }
 
-    public function setDateHeureDebut(\DateTimeInterface $dateHeureDebut): static
-    {
-        $this->dateHeureDebut = $dateHeureDebut;
-
-        return $this;
-    }
 
     public function getDuree(): ?int
     {
@@ -104,17 +95,8 @@ class Sortie
         return $this;
     }
 
-    public function getDateLimiteInscription(): ?\DateTimeInterface
-    {
-        return $this->dateLimiteInscription;
-    }
 
-    public function setDateLimiteInscription(\DateTimeInterface $dateLimiteInscription): static
-    {
-        $this->dateLimiteInscription = $dateLimiteInscription;
 
-        return $this;
-    }
 
     public function getNbInscriptionsMax(): ?int
     {
@@ -176,6 +158,28 @@ class Sortie
         return $this;
     }
 
+    public function getDateHeureDebut(): ?\DateTimeImmutable
+    {
+        return $this->dateHeureDebut;
+    }
+
+    public function setDateHeureDebut(?\DateTimeImmutable $dateHeureDebut): Sortie
+    {
+        $this->dateHeureDebut = $dateHeureDebut;
+        return $this;
+    }
+
+    public function getDateLimiteInscription(): ?\DateTimeImmutable
+    {
+        return $this->dateLimiteInscription;
+    }
+
+    public function setDateLimiteInscription(?\DateTimeImmutable $dateLimiteInscription): Sortie
+    {
+        $this->dateLimiteInscription = $dateLimiteInscription;
+        return $this;
+    }
+
     /**
      * @return Collection<int, Participant>
      */
@@ -213,5 +217,21 @@ class Sortie
         $this->organisateur = $organisateur;
 
         return $this;
+    }
+
+    public function getFormattedDuree(): String
+    {
+        $minutes= $this->duree;
+        $heures = intdiv($minutes, 60);
+        $minutesRestantes = $minutes % 60;
+
+        $dureeFormate ='';
+        if ($heures > 0) {
+            $dureeFormate.= $heures . ' heure' . ($heures > 1 ? 's' : '') . ' ';
+        }
+        if ($minutesRestantes > 0 ){
+            $dureeFormate .= $minutesRestantes . ' minute' . ($minutesRestantes > 1 ? 's' : '');
+        }
+        return $dureeFormate;
     }
 }

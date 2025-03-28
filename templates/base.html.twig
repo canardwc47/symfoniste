@@ -22,6 +22,15 @@
                 </a>
             </h1>
             {% include 'navbar.html.twig' %}
+
+            {# pour afficher les add flash#}
+            {% for label, messages in app.flashes %}
+            <div class="alert alert-{{ label }}">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
         </div>
     </header>
     <div class="container">
