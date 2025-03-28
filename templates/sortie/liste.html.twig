@@ -69,8 +69,8 @@
                                 {% endif %}
                                 {% if sortie.organisateur == app.user %}
                                     {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
-                                        <a href="" class="btn btn-sm btn-outline-success">Modifier</a>
-                                        <a href="" class="btn btn-sm btn-outline-success">Annuler</a>
+                                        <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Modifier</a>
+                                        <a href="{{ path('sortie_delete', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Annuler</a>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}

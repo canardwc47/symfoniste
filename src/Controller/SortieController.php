@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\AnnulationType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 
 use App\Repository\ParticipantRepository;
 
+use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -121,7 +123,7 @@ final class SortieController extends AbstractController
 
             $this->addFlash('success', 'Ta sortie a bien été créée!');
 
-           return $this->render('sortie/liste.html.twig', ["sorties" => $sortie]);
+           return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
 
         }
         //Affiche le formulaire
@@ -151,9 +153,13 @@ final class SortieController extends AbstractController
 }
 
 
-        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi!!
+        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi cf csrf token!!
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
+    public function delete(
+        int $id,
+        SortieRepository $sortieRepository,
+        Request $request,
+        EntityManagerInterface $em): Response
     {
         $sortie = $sortieRepository->find($id);
         //s'il n'existe pas dans la bdd, on lance une erreur 404
@@ -162,21 +168,54 @@ final class SortieController extends AbstractController
         }
 
         //si je ne suis pas le proprio et que je ne suis pas admin alors je ne peux pas y accéder
-//        if(!($wish->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
-//            throw $this->createAccessDeniedException("Pas possible gamin !");
+//        if(!($sortie->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
+//            throw $this->createAccessDeniedException("Tu n'as pas le droit de faire ça désolé !");
 //        }
         /*TODO:faire les accès avec les roles */
-/*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
-            throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
-        }*/
-        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {
-            $em->remove($sortie, true);
+        /*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
+                    throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
+                }*/
+        /* if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {*/
+        $em->remove($sortie, true);
+        $em->flush();
+        $this->addFlash('success', 'Ta sortie a bien été supprimée !');
+        /*       } else {
+                   $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
+               }*/
+        return $this->redirectToRoute('sortie_delete');
+
+    }
+
+    #[Route('/sortie/{id}/annulation', name: 'sortie_annulation', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function annulation(
+        int $id,
+        SiteRepository $siteRepository,
+        SortieRepository $sortieRepository,
+        EtatRepository $etatRepository,
+        Request $request,
+        EntityManagerInterface $em) : Response {
+
+        $sortie = $sortieRepository ->find($id);
+        $site = $siteRepository ->find($sortie->getSite()->getId());
+
+
+        $etatAnnule = $etatRepository-> findBy(['libelle'=> 'Annulée']);
+
+
+        $annulationForm = $this->createForm(AnnulationType::class, $sortie);
+        $annulationForm->handleRequest($request);
+
+        if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
+
+            $sortie ->setEtat($etatAnnule[0]);
+            $em->persist($sortie);
             $em->flush();
-            $this->addFlash('success', 'Ta sortie a bien été supprimée !');
-        } else {
-            $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
+
+            return $this->redirectToRoute('sortie_liste');
+
         }
-        return $this->redirectToRoute('sortie_liste');
-   }
+
+        return $this->render('sortie/annulation.html.twig' , ["annulationForm"=> $annulationForm, 'siteId'=> $site->getId(), 'sortie'=> $sortie ]);
+    }
 
 }

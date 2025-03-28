@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Annuler une sortie {% endblock %}
+
+{% block body %}
+<article>
+    <div>Nom de la sortie: {{ sortie.nomSortie }}</div>
+    <div>Date et heure de la sortie: {{ sortie.dateHeureDebut|date('d-m-Y H:i') }}</div>
+    <div>Ville organisatrice: {{ sortie.site.nomSite }}</div>
+    <div>Lieu: {{ sortie.lieu.nomLieu }}</div>
+
+    {{ form_start(annulationForm) }}
+
+
+    {{ form_widget(annulationForm) }}
+    <button id="btn" type="submit" class="btn btn-sm btn-primary">Enregistrer</button>
+    <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}"
+       class="btn btn-danger mt-2"
+       title="Delete sortie">Annuler</a>
+    {{ form_end(annulationForm) }}
+
+
+
+
+{#    <form action="{{ path('sortie_annulation', {'id': sortie.id}) }}" method="post">#}
+{#    <div>#}
+{#        <label for="motif" > Motif :#}
+{#<textarea></textarea>#}
+{#        </label>#}
+{#    </div>#}
+{#    <div>#}
+{#        <button id="btn" type="submit" class="btn btn-sm btn-primary">Enregistrer</button>#}
+
+{#        #}{#                {% if sortie.user == app.user or is_granted("ROLE_ADMIN") %}#}
+{#        #}{#{% if is_granted("WISH_DELETE", wish) %}#}
+{#            <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}"#}
+{#               class="btn btn-danger mt-2"#}
+{#               title="Delete sortie">Annuler</a>#}
+{#        #}{#{% endif %}#}
+{#    </div>#}
+{#    </form>#}
+
+
+</article>
+{% endblock %}
