@@ -223,8 +223,9 @@ final class SortieController extends AbstractController
             $sortie ->setEtat($etatAnnule[0]);
             $em->persist($sortie);
             $em->flush();
+            $this->addFlash('success', 'Ta sortie a bien été annulée !');
 
-            return $this->redirectToRoute('sortie_liste');
+            return $this->redirectToRoute('sortie_liste', ['id' => $sortie->getId(), 'siteId'=> $site->getId()]);
 
         }
 
