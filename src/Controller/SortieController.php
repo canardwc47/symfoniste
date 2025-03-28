@@ -68,14 +68,14 @@ final class SortieController extends AbstractController
     }
 
 
-     #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
 
     public function desister(
-         int $id,
-         SortieRepository $sortieRepository,
-         ParticipantRepository $participantRepository,
-         Security $security,
-         EntityManagerInterface $em
+        int $id,
+        SortieRepository $sortieRepository,
+        ParticipantRepository $participantRepository,
+        Security $security,
+        EntityManagerInterface $em
     ): Response
     {
         $user = $security->getUser();
@@ -105,7 +105,7 @@ final class SortieController extends AbstractController
         return $this->render('sortie/detail.html.twig', ["sortie" => $sortie]);
     }
 
-    #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
+    #[Route('/sortie/creer', name: 'sortie_creer', methods: ['GET', 'POST'])]
     public function create(
         Request                $request,
         EntityManagerInterface $em,
@@ -131,14 +131,11 @@ final class SortieController extends AbstractController
 
             $this->addFlash('success', 'Ta sortie a bien été créée!');
 
-           return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
-
-
-
+            return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
 
         }
         //Affiche le formulaire
-        return $this->render('sortie/create.html.twig', [
+        return $this->render('sortie/creer.html.twig', [
             "sortieForm" => $sortieForm->createView()
         ]);
     }
@@ -146,27 +143,27 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/update', name: 'sortie_update', requirements: ['id' => '\d+'], methods: ['GET','POST'])]
     /*#[IsGranted ('SORTIE-EDIT', 'sortie')]*/
     public function update (Sortie $sortie, Request $request, EntityManagerInterface $em): Response
-        {
-            if (!$sortie){
-                throw $sortie-> createNotFoundExecption('Cette sortie n\'existe pas désolée ');
-            }
+    {
+        if (!$sortie){
+            throw $sortie-> createNotFoundExecption('Cette sortie n\'existe pas désolée ');
+        }
 
-            $sortieForm = $this->createForm(SortieType::class, $sortie);
-            //Récupère les données du formulaire et on les injecte dans notre $sortie.
-            $sortieForm->handleRequest($request);
+        $sortieForm = $this->createForm(SortieType::class, $sortie);
+        //Récupère les données du formulaire et on les injecte dans notre $sortie.
+        $sortieForm->handleRequest($request);
 
-            if ($sortieForm->isSubmitted() && $sortieForm->isValid()){
+        if ($sortieForm->isSubmitted() && $sortieForm->isValid()){
 
-                $em->flush();
-                $this->addFlash('success', 'La mise à jour de ta sortie a été effectuée avec succès!');
+            $em->flush();
+            $this->addFlash('success', 'La mise à jour de ta sortie a été effectuée avec succès!');
 
-                return $this->redirectToRoute('sortie_liste', ['id'=> $sortie->getId()]);
-            }
-        return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
-}
+            return $this->redirectToRoute('sortie_liste', ['id'=> $sortie->getId()]);
+        }
+        return $this->render('sortie/creer.html.twig', ["sortieForm"=> $sortieForm]);
+    }
 
 
-        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi cf csrf token!!
+    // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi cf csrf token!!
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function delete(
         int $id,
