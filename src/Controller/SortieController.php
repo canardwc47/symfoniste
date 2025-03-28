@@ -24,13 +24,17 @@ final class SortieController extends AbstractController
     #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
-
-        $participant = $this->getUser();
+        $participant = $this->getUser(); // Récupère l'utilisateur connecté
         $sorties = $sortieRepository->findAll();
         $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
+        $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
+
+
+
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
-            'sortiesOrganisateur' => $sortiesOrganisateur
+            'sortiesOrganisateur' => $sortiesOrganisateur,
+            'sortiesInscrit' => $sortiesInscrit
         ]);
     }
 
