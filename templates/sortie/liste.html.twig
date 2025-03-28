@@ -14,6 +14,10 @@
     <label>
         <input type="checkbox" id="filterCheckboxInscrit"> Afficher uniquement les sorties auxquelles je suis inscrit
     </label>
+<br>
+    <label>
+        <input type="checkbox" id="filterCheckboxNonInscrit"> Afficher uniquement les sorties auxquelles je ne suis pas inscrit
+    </label>
 
 
     <div class="table-responsive">
@@ -34,8 +38,10 @@
         {% for sortie in sorties %}
             <tr class="sortie"
                 data-inscrit="{% if sortie in sortiesInscrit %}1{% else %}0{% endif %}"
+                data-non-inscrit="{% if sortie in sortiesInscrit %}0{% else %}1{% endif %}"
                 data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
-                <!-- Affichage des données de la sortie -->
+
+            <!-- Affichage des données de la sortie -->
                 <td>{{ sortie.nomSortie }}</td>
                 <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
                 <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
@@ -97,35 +103,58 @@
     </table>
 
     <script>
-        // Filtre Organisateur
-        document.getElementById("filterCheckboxOrganisateur").addEventListener("change", function () {
-            let checked = this.checked;
-            //Rajout d'un if pour gérer les utilisateurs non connectés
-            {% if app.user %}
-            let userId = {{ app.user.id }}; // Récupérer l'ID de l'utilisateur connecté
+        document.addEventListener("DOMContentLoaded", function () {
+            // Récupération des checkbox
+            const filterCheckboxOrganisateur = document.getElementById("filterCheckboxOrganisateur");
+            const filterCheckboxInscrit = document.getElementById("filterCheckboxInscrit");
+            const filterCheckboxNonInscrit = document.getElementById("filterCheckboxNonInscrit");
 
-            document.querySelectorAll(".sortie").forEach(sortie => {
-                let isOrganisateur = parseInt(sortie.getAttribute("data-organisateur")) === 1;
-                sortie.style.display = (checked && !isOrganisateur) ? "none" : "table-row";
-            });
+            // Tableau des checkboxes
+            const checkboxes = [filterCheckboxOrganisateur, filterCheckboxInscrit, filterCheckboxNonInscrit];
 
-
-            // Filtre Inscrit
-            document.getElementById("filterCheckboxInscrit").addEventListener("change", function () {
-                let checked = this.checked;
-                let userId = {{ app.user.id }}; // ID de l'utilisateur connecté
-
+            // Fonction pour filtrer les sorties
+            function filterSorties() {
                 document.querySelectorAll(".sortie").forEach(sortie => {
-                    let isInscrit = parseInt(sortie.getAttribute("data-inscrit")) === 1;
-                    sortie.style.display = (checked && !isInscrit) ? "none" : "table-row";
+                    let isOrganisateur = sortie.dataset.organisateur === "1";
+                    let isInscrit = sortie.dataset.inscrit === "1";
+                    let isNonInscrit = sortie.dataset.nonInscrit === "1";
+
+                    let show = true;
+
+                    // Appliquer le bon filtre (un seul peut être actif)
+                    if (filterCheckboxOrganisateur.checked) {
+                        show = isOrganisateur;
+                    } else if (filterCheckboxInscrit.checked) {
+                        show = isInscrit;
+                    } else if (filterCheckboxNonInscrit.checked) {
+                        show = isNonInscrit;
+                    }
+
+                    // Affichage des sorties
+                    sortie.style.display = show ? "" : "none";
                 });
+            }
 
-                {% else %}
-                // Cacher les checkbox s'il n'y a pas d'utilisateur connecté
-                document.getElementById("filterCheckbox").style.display = "none";
+            // Fonction pour forcer une seule checkbox cochée à la fois
+            function handleCheckboxClick(clickedCheckbox) {
+                checkboxes.forEach(checkbox => {
+                    if (checkbox !== clickedCheckbox) {
+                        checkbox.checked = false; // Décoche les autres
+                    }
+                });
+                filterSorties(); // Appliquer le filtre après changement
+            }
 
-                {% endif %}
+            // Événements pour chaque checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    handleCheckboxClick(this);
+                });
             });
+
+            // Exécuter le filtre une première fois
+            filterSorties();
         });
+
     </script>
 {% endblock %}

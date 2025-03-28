@@ -35,13 +35,14 @@ final class SortieController extends AbstractController
         $sorties = $sortieRepository->findAll();
         $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
         $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
-
+        $sortiesNonInscrit = $sortieRepository->findByNonInscrit($participant);
 
 
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
             'sortiesOrganisateur' => $sortiesOrganisateur,
-            'sortiesInscrit' => $sortiesInscrit
+            'sortiesInscrit' => $sortiesInscrit,
+            'sortiesNonInscrit' => $sortiesNonInscrit
         ]);
     }
 
