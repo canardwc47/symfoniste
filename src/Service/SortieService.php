@@ -16,7 +16,6 @@ class SortieService
 {
 
     private datetime $dateLimiteInscription;
-    private SortieRepository $sortieRepository;
     private SortieController $sortieController;
 
     public function __construct(SortieRepository $sortieRepository)
@@ -56,7 +55,6 @@ class SortieService
 
     }
 
-
     public function publierSortie(
         Sortie $sortie,
         EntityManagerInterface $em
@@ -70,6 +68,7 @@ class SortieService
 
     public function clotureSortie (SortieRepository $sortieRepository)
     {
+
 
     }
 

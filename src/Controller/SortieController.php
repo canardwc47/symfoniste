@@ -32,12 +32,11 @@ final class SortieController extends AbstractController
     #[Route('/', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
-        $participant = $this->getUser(); // Récupère l'utilisateur connecté
+        $participant = $this->getUser();
         $sorties = $sortieRepository->findAll();
         $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
         $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
         $sortiesNonInscrit = $sortieRepository->findByNonInscrit($participant);
-
 
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
@@ -73,7 +72,6 @@ final class SortieController extends AbstractController
 
     #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
-        /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
     {
         //Récupère la sortie en fonction de l'id présent dans l'url
         $sortie = $sortieRepository->find($id);
@@ -89,7 +87,6 @@ final class SortieController extends AbstractController
         EntityManagerInterface $em,
     ): Response
     {
-        //Création de l'entité vide
         $sortie = new Sortie();
         $sortie->setOrganisateur($this->getUser());
         $sortie->addParticipant($sortie->getOrganisateur());
@@ -97,22 +94,18 @@ final class SortieController extends AbstractController
         $sortie->setEtat($etat);
         $sortie->setSite($sortie->getOrganisateur()->getSite());
 
-
         //Création du formulaire SORTIE et association de l'entité vide.
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-
             $em->persist($sortie);
             $em->flush();
 
             $this->addFlash('success', 'Ta sortie a bien été créée!');
-
             return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
-
         }
-        //Affiche le formulaire
+
         return $this->render('sortie/creer.html.twig', [
             "sortieForm" => $sortieForm->createView()
         ]);
@@ -127,11 +120,9 @@ final class SortieController extends AbstractController
         }
 
         $sortieForm = $this->createForm(SortieType::class, $sortie);
-        //Récupère les données du formulaire et on les injecte dans notre $sortie.
         $sortieForm->handleRequest($request);
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()){
-
             $em->flush();
             $this->addFlash('success', 'La mise à jour de ta sortie a été effectuée avec succès!');
 
