@@ -30,16 +30,25 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
      *
      * @throws UserNotFoundException if the user is not found
      */
-    public function loadUserByIdentifier($identifier): UserInterface
+    public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        $user = $this->findOneBy(['email' => $identifier]);
-
-        if (!$user) {
-            throw new UserNotFoundException(sprintf('User with email "%s" not found.', $identifier));
-        }
-
-        return $user;
+        return $this -> createQueryBuilder('p')
+            ->where('p.email =:identifier OR p.pseudo =:identifer')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
+   /* {
+        $repository = $this->getEntityManager()->getRepository(Participant::class);
+        $user = $repository->findOneBy(['email' => $identifier]);
+        if (!$user) {
+             $user = $repository->findOneBy(['pseudo' => $identifier]);
+        }
+        if (!$user){
+            throw new UserNotFoundException('Participant non trouvé');
+        }
+        return $user;
+    }*/
 
     /**
      * @deprecated since Symfony 5.3, loadUserByIdentifier() is used instead
@@ -92,4 +101,5 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         // 1. persist the new password in the user storage
         // 2. update the $user object with $user->setPassword($newHashedPassword);
     }
+
 }
