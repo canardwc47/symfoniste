@@ -36,10 +36,13 @@
         </thead>
         <tbody>
         {% for sortie in sorties %}
-            <tr class="sortie"
-                data-inscrit="{% if sortie in sortiesInscrit %}1{% else %}0{% endif %}"
-                data-non-inscrit="{% if sortie in sortiesInscrit %}0{% else %}1{% endif %}"
-                data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
+            {% if sortie %}
+                {% if (sortie.etat.libelle == 'Créée' and sortie.organisateur == app.user)
+                    or sortie.etat.libelle != 'Archivée' %}
+                    <tr class="sortie"
+                        data-inscrit="{% if sortie in sortiesInscrit %}1{% else %}0{% endif %}"
+                        data-non-inscrit="{% if sortie in sortiesInscrit %}0{% else %}1{% endif %}"
+                        data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
 
                         <td>{{ sortie.nomSortie }} {{ sortie.id }}</td>
                         <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
@@ -89,14 +92,17 @@
                             {% endif %}
                         </td>
                     </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+
+                {% endif %}
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
+                </tr>
+            {%  endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
     </div>
 
     <script>

@@ -66,12 +66,40 @@ class SortieService
             $em->flush();
     }
 
-    public function clotureSortie (SortieRepository $sortieRepository)
+    public function majSorties (
+        EntityManagerInterface $em
+) : array
     {
+        $currentDate = new \DateTimeImmutable();
+        $sorties = $em->getRepository(Sortie::class) ->findAll();
+        $updatedSorties = [];
 
+        foreach ($sorties as $sortie) {
+            if ($sortie->getDateLimiteInscription() <= $currentDate && $sortie->getEtat()->getLibelle() == 'Ouverte' ) {
+                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Clôturée']);
+                $sortie->setEtat($etat);
+            }
+            if ($sortie->getDateHeureDebut() <= $currentDate && $sortie->getEtat()->getLibelle() == 'Clôturée' ) {
+                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Activité en cours']);
+                $sortie->setEtat($etat);
+            }
+            $dateDebutPlusUnJour = $sortie->getDateHeureDebut()->modify('+1 day');
+            if ($dateDebutPlusUnJour <= $currentDate && $sortie->getEtat()->getLibelle() == 'Activité en cours' ) {
+                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Passée']);
+                $sortie->setEtat($etat);
+            }
+
+            $dateDebutPlusUnMois = $sortie->getDateHeureDebut()->modify('+1 month');
+            if ($dateDebutPlusUnMois <= $currentDate && ($sortie->getEtat()->getLibelle() == 'Passée' || $sortie->getEtat()->getLibelle() == 'Annulée'))  {
+                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Archivée']);
+                $sortie->setEtat($etat);
+            }
+            $em->persist($sortie);
+            $updatedSorties[] = $sortie;
+        }
+        $em->flush();
+        return $updatedSorties;
 
     }
-
-
 
 }

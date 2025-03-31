@@ -26,20 +26,25 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use function Symfony\Component\Clock\now;
 
 final class SortieController extends AbstractController
 {
     #[Route('/', name: 'sortie_liste', methods: ['GET'])]
-    public function liste(SortieRepository $sortieRepository): Response
+    public function liste(
+        EntityManagerInterface $em,
+        SortieService $sortieService
+    ): Response
     {
         $participant = $this->getUser();
-        $sorties = $sortieRepository->findAll();
-        $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
-        $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
-        $sortiesNonInscrit = $sortieRepository->findByNonInscrit($participant);
+        $updatedSorties = $sortieService->majSorties($em);
+
+        $sortiesOrganisateur = $em->getRepository(Sortie::class)->findByOrganisateur($participant);
+        $sortiesInscrit = $em->getRepository(Sortie::class)->findByInscrit($participant);
+        $sortiesNonInscrit = $em->getRepository(Sortie::class)->findByNonInscrit($participant);
 
         return $this->render('sortie/liste.html.twig', [
-            'sorties' => $sorties,
+            'sorties' => $updatedSorties,
             'sortiesOrganisateur' => $sortiesOrganisateur,
             'sortiesInscrit' => $sortiesInscrit,
             'sortiesNonInscrit' => $sortiesNonInscrit

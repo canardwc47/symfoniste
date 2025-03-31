@@ -42,8 +42,10 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
                     $dateHeureDebut = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 week', '+1 week'));
                 }
             $sortie->setDateHeureDebut($dateHeureDebut);
-            $dateString = $dateHeureDebut->format('Y-m-d H:i:s');
-            $dateLimiteInscription = DateTimeImmutable::createFromMutable($faker->dateTimeBetween( $dateString, '+2 months'));
+            $dateInscription = $dateHeureDebut->sub(new \DateInterval('P1M'));
+            $dateDebutString = $dateHeureDebut->format('Y-m-d H:i:s');
+            $dateInscriptionString = $dateInscription->format('Y-m-d H:i:s');
+            $dateLimiteInscription = DateTimeImmutable::createFromMutable($faker->dateTimeBetween( $dateInscriptionString, $dateDebutString));
             $sortie->setDateLimiteInscription($dateLimiteInscription);
 
             $sortie->setNbInscriptionsMax($faker->numberBetween(5, 50));
