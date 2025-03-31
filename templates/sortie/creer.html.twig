@@ -12,6 +12,7 @@
                 <h2>Ajoute ta sortie !</h2>
             {% else %}
                 <h2>Modifie ta sortie !</h2>
+                <label for="{{ ( sortie.etat.libelle ) }}" >Etat de la sortie: {{ sortie.etat.libelle }} </label>
             {% endif %}
 
 
@@ -72,12 +73,19 @@
                        placeholder="{{ field_label( sortieForm.infosSortie ) }}"
                        class="form-control"
                 >
-                {{ form_end(sortieForm) }}<br>
-            </div>
 
-            <button type="submit" class="btn btn-sm btn-success">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary">
                 {{ sortieForm.vars.value.id == null ? 'Créer une sortie' : 'Modifier' }}
             </button>
+
+            {{ form_end(sortieForm) }}
+
+            {% if sortie is defined and sortie.etat is defined and sortie.etat.libelle == 'Créée' %}
+                <a href="{{ path('sortie_publier', {'id': sortie.id}) }}"
+                   onclick="return confirm('Voulez-vous vraiment publier cette sortie ?')"
+                   class="btn btn-sm btn-primary">Publier</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
