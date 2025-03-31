@@ -16,6 +16,41 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
+    /**
+     * @return Sortie[] Returns an array of Sortie objects
+     */
+    public function findByOrganisateur($organisateur): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.organisateur = :organisateur')
+            ->setParameter('organisateur', $organisateur)
+            ->orderBy('s.dateHeureDebut', 'DESC')// Trier par date décroissante par exemple
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByInscrit($participant): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.participants', 'p') // Jointure avec la table des participants
+            ->andWhere('p = :participant')
+            ->setParameter('participant', $participant)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByNonInscrit($participant): array
+    {
+        return $this->createQueryBuilder('s')
+            ->join('s.participants', 'p') // Jointure avec la table des participants
+            ->andWhere('p IS NULL OR p != :participant')
+            ->setParameter('participant', $participant)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Sortie[] Returns an array of Sortie objects
     //     */

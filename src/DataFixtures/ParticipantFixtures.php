@@ -18,24 +18,40 @@ class ParticipantFixtures extends Fixture implements DependentFixtureInterface
     }
     public function load(ObjectManager $manager): void
     {
-
         $faker = Factory::create('fr_FR');
         $site = $manager->getRepository(Site::class)->findAll();
 
         for ($i = 0; $i < 20; $i++) {
+            $prenom = $faker->firstName;
+            $nom = $faker->lastName;
+
+            $domains = [
+                'gmail.com',
+                'yahoo.com',
+                'wanadoo.fr',
+                'outlook.com',
+                'hotmail.com',
+                'msn.com',
+                'live.com',
+
+            ];
+            $email = strtolower(str_replace(' ', '', $prenom) . '.' . str_replace(' ', '', $nom) . '@' . $domains[array_rand($domains)]);
+            $pseudo = strtolower($prenom . rand(1, 999));
+
             $participant = new Participant();
             $participant
-                ->setPseudo($faker->userName)
-            ->setPrenom($faker->firstName)
-            ->setNom($faker->lastName)
-            ->setEmail($faker->email)
-            ->setTelephone($faker->phoneNumber)
-            ->setSite($faker->randomElement($site))
-            ->setActif( 1)
-            ->setAdministrateur(0)
-            ->setMdp(
-                $this->userPasswordHasher->hashPassword($participant, "123456")
-            )->setRoles(['ROLE_USER']);
+                ->setPseudo($pseudo)
+                ->setPrenom($prenom)
+                ->setNom($nom)
+                ->setEmail($email)
+                ->setTelephone($faker->phoneNumber)
+                ->setSite($faker->randomElement($site))
+                ->setActif( 1)
+                ->setAdministrateur(0)
+                ->setMdp(
+                    $this->userPasswordHasher->hashPassword($participant, "123456")
+                )->setRoles(['ROLE_USER'])
+                ->setFilename(null);
 
             $manager->persist($participant);
         }

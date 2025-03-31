@@ -2,16 +2,26 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+
+use App\Form\AnnulationType;
+
+use App\Form\LieuType;
+
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
 
 use App\Repository\ParticipantRepository;
 
+use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,77 +31,116 @@ final class SortieController extends AbstractController
     #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
     public function liste(SortieRepository $sortieRepository): Response
     {
+        $participant = $this->getUser(); // Récupère l'utilisateur connecté
         $sorties = $sortieRepository->findAll();
+        $sortiesOrganisateur = $sortieRepository->findByOrganisateur($participant);
+        $sortiesInscrit = $sortieRepository->findByInscrit($participant); // Vérifie que tu récupères les sorties où l'utilisateur est inscrit
+        $sortiesNonInscrit = $sortieRepository->findByNonInscrit($participant);
+
+
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
+            'sortiesOrganisateur' => $sortiesOrganisateur,
+            'sortiesInscrit' => $sortiesInscrit,
+            'sortiesNonInscrit' => $sortiesNonInscrit
         ]);
     }
 
-    #[Route('/sortie', name: 'sortie_inscrire', methods: ['GET', 'POST'])]
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function inscrire(
+        int $id,
         SortieRepository $sortieRepository,
+        Security $security,
         ParticipantRepository $participantRepository,
         EntityManagerInterface $em
     ): Response
     {
-        $sortie = new Sortie();
-        $sortie->addParticipant($participantRepository->find(21));
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->addParticipant($participant);
 
         $em->persist($sortie);
         $em->flush();
 
-        $sorties = $sortieRepository->findAll();
+        return $this->redirectToRoute('sortie_liste');
+    }
 
 
-        return $this->render('sortie/liste.html.twig', [
-            'sorties' => $sorties,
-        ]);
+     #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
+
+    public function desister(
+         int $id,
+         SortieRepository $sortieRepository,
+         ParticipantRepository $participantRepository,
+         Security $security,
+         EntityManagerInterface $em
+    ): Response
+    {
+        $user = $security->getUser();
+        $participant = $participantRepository->findOneBy(['id' => $user]);
+
+        $sortie = $sortieRepository->find($id);
+        $sortie->removeParticipant($participant);
+
+
+        // 4️⃣ Sauvegarde en base de données
+        $em->persist($sortie);
+        $em->flush();
+
+        return $this->redirectToRoute('sortie_liste');
+    }
+
+
+    #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function detail(int $id, SortieRepository $sortieRepository): Response
+        /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
+    {
+        //Récupère la sortie en fonction de l'id présent dans l'url
+        $sortie = $sortieRepository->find($id);
+        if (!$sortie) {
+            throw $this->createNotFoundException('Cette sortie n\'existe pas désolé!');
+        }
+        return $this->render('sortie/detail.html.twig', ["sortie" => $sortie]);
     }
 
     #[Route('/sortie/create', name: 'sortie_create', methods: ['GET', 'POST'])]
     public function create(
         Request                $request,
         EntityManagerInterface $em,
-        SortieRepository $sortieRepository,
-        EtatRepository $etatRepository
-
     ): Response
     {
-        $sorties = $sortieRepository->findAll();
         //Création de l'entité vide
         $sortie = new Sortie();
-        $sortie->setOrganisateur(null);
-        $etat = $etatRepository->find(1);
+        $sortie->setOrganisateur($this->getUser());
+        $sortie->addParticipant($sortie->getOrganisateur());
+        $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
         $sortie->setEtat($etat);
+        $sortie->setSite($sortie->getOrganisateur()->getSite());
 
 
-        //Création du formulaire et association de l'entité vide.
-
+        //Création du formulaire SORTIE et association de l'entité vide.
         $sortieForm = $this->createForm(SortieType::class, $sortie);
-        //Récupère les données du formulaire et on les injecte dans notre $wish.
         $sortieForm->handleRequest($request);
-        //On vérifie si le formulaire a été soumis et que les données soumises sont valides.
+
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            //Hydrater les propriétés absentes du formulaire
-//            $wish->setIsPublished(true);
-            //Sauvegarde dans la Bdd
-            //ajout de la relation avec le user
-            //$sortie->setUser($this->getUser());
 
             $em->persist($sortie);
             $em->flush();
 
-            //Affiche un message à l'utilisateur sur la prochaine page.
             $this->addFlash('success', 'Ta sortie a bien été créée!');
 
-            //Redirige vers la page de detail du wish
-           // return $this->redirectToRoute('sortie.html.twig');
-            return $this->render('sortie/liste.html.twig', [
-                'sorties' => $sorties,
-            ]);
+           return $this->redirectToRoute('sortie_liste', ["sorties" => $sortie]);
+
+
+
+
         }
         //Affiche le formulaire
-        return $this->render('sortie/create.html.twig', ["sortieForm" => $sortieForm]);
+        return $this->render('sortie/create.html.twig', [
+            "sortieForm" => $sortieForm->createView()
+        ]);
     }
 
     #[Route('/sortie/{id}/update', name: 'sortie_update', requirements: ['id' => '\d+'], methods: ['GET','POST'])]
@@ -116,9 +165,14 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig', ["sortieForm"=> $sortieForm]);
 }
 
-        // SUPPRESSION D'UNE SORTIE  !!
+
+        // SUPPRESSION D'UNE SORTIE a peaufiner et ajouter des trucs dans le twig pour que ca fonctionne aussi cf csrf token!!
     #[Route('/sortie/{id}/delete', name: 'sortie_delete', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function delete(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $em): Response
+    public function delete(
+        int $id,
+        SortieRepository $sortieRepository,
+        Request $request,
+        EntityManagerInterface $em): Response
     {
         $sortie = $sortieRepository->find($id);
         //s'il n'existe pas dans la bdd, on lance une erreur 404
@@ -127,21 +181,55 @@ final class SortieController extends AbstractController
         }
 
         //si je ne suis pas le proprio et que je ne suis pas admin alors je ne peux pas y accéder
-//        if(!($wish->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
-//            throw $this->createAccessDeniedException("Pas possible gamin !");
+//        if(!($sortie->getUser() === $this->getUser() || $this->isGranted("ROLE_ADMIN"))){
+//            throw $this->createAccessDeniedException("Tu n'as pas le droit de faire ça désolé !");
 //        }
         /*TODO:faire les accès avec les roles */
-/*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
-            throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
-        }*/
-        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {
-            $em->remove($sortie, true);
+        /*        if (!$this->isGranted('SORTIE_DELETE', $sortie)) {
+                    throw $this->createAccessDeniedException("Malheureusement, tu ne peux pas utiliser cette modalité.");
+                }*/
+        /* if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->query->get('_token'))) {*/
+        $em->remove($sortie, true);
+        $em->flush();
+        $this->addFlash('success', 'Ta sortie a bien été supprimée !');
+        /*       } else {
+                   $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
+               }*/
+        return $this->redirectToRoute('sortie_delete');
+
+    }
+
+    #[Route('/sortie/{id}/annulation', name: 'sortie_annulation', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function annulation(
+        int $id,
+        SiteRepository $siteRepository,
+        SortieRepository $sortieRepository,
+        EtatRepository $etatRepository,
+        Request $request,
+        EntityManagerInterface $em) : Response {
+
+        $sortie = $sortieRepository ->find($id);
+        $site = $siteRepository ->find($sortie->getSite()->getId());
+
+
+        $etatAnnule = $etatRepository-> findBy(['libelle'=> 'Annulée']);
+
+
+        $annulationForm = $this->createForm(AnnulationType::class, $sortie);
+        $annulationForm->handleRequest($request);
+
+        if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
+
+            $sortie ->setEtat($etatAnnule[0]);
+            $em->persist($sortie);
             $em->flush();
-            $this->addFlash('success', 'Ta sortie a bien été supprimée !');
-        } else {
-            $this->addFlash('danger', 'Ta sortie ne peut pas être supprimée !');
+            $this->addFlash('success', 'Ta sortie a bien été annulée !');
+
+            return $this->redirectToRoute('sortie_liste', ['id' => $sortie->getId(), 'siteId'=> $site->getId()]);
+
         }
-        return $this->redirectToRoute('sortie_liste');
-   }
+
+        return $this->render('sortie/annulation.html.twig' , ["annulationForm"=> $annulationForm, 'siteId'=> $site->getId(), 'sortie'=> $sortie ]);
+    }
 
 }
