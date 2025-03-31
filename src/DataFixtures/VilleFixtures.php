@@ -14,22 +14,11 @@ class VilleFixtures extends Fixture
 
         $faker = Factory::create('fr_FR');
 
-        $villes = [
-            ["nom" => "Rennes", "code_postal" => "35000"],
-            ["nom" => "Nantes", "code_postal" => "44000"],
-            ["nom" => "Caen", "code_postal" => "14000"],
-            ["nom" => "St-Herblain", "code_postal" => "44800"],
-            ["nom" => "Brest", "code_postal" => "29200"],
-            ["nom" => "Quimper", "code_postal" => "29000"],
-            ["nom" => "St-Malo", "code_postal" => "35400"],
-            ["nom" => "Le Mans", "code_postal" => "72000"],
-        ];
 
-
-        foreach ($villes as $data) {
+        for ($i = 0; $i < 20; $i++) {
             $ville = new Ville();
-            $ville->setNom($data["nom"]);
-            $ville->setCodePostal($data["code_postal"]);
+            $ville->setNom($faker->city);
+            $ville->setCodePostal(mt_rand(10000, 99999));
             $manager->persist($ville);
         }
 
