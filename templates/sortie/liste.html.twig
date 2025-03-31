@@ -7,7 +7,17 @@
         <h2 class="text-center mb-4">Les Sorties !</h2>
 
         <label>
-            <input type="checkbox" id="filterCheckbox"> Sorties dont je suis l'orga
+            <input type="checkbox" id="filterCheckboxOrganisateur"> Afficher uniquement mes sorties organisées
+        </label>
+        <br>
+
+        <label>
+            <input type="checkbox" id="filterCheckboxInscrit"> Afficher uniquement les sorties auxquelles je suis inscrit
+        </label>
+        <br>
+
+        <label>
+            <input type="checkbox" id="filterCheckboxNonInscrit"> Afficher uniquement les sorties auxquelles je ne suis pas inscrit
         </label>
 
         <div class="table-responsive">
@@ -26,12 +36,16 @@
                 </thead>
                 <tbody>
                 {% for sortie in sorties %}
-                    <tr class="sortie" data-organisateur="{{ sortie.organisateur.id }}">
+                    <tr class="sortie"
+                        data-id="{{ sortie.id }}"
+                        data-inscrit="{% if sortie.participants.contains(app.user) %}1{% else %}0{% endif %}"
+                        data-non-inscrit="{% if sortie.participants.contains(app.user) %}0{% else %}1{% endif %}"
+                        data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
 
-                        <td>{{ sortie.nomSortie }} {{ sortie.id }}</td>
-                        <td>{{ sortie.dateHeureDebut.format(' d/m/Y à H:i') }}</td>
+                        <td>{{ sortie.nomSortie }} ({{ sortie.id }})</td>
+                        <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                        <td><span class="badge bg-primary"> {{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
+                        <td><span class="badge bg-primary">{{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
 
                         <td>
                             {% if sortie.etat.libelle == 'Créée' %}
@@ -43,11 +57,13 @@
                             {% else %}
                                 <span class="badge bg-secondary text-grey">{{ sortie.etat.libelle }}</span>
                             {% endif %}
-
                         </td>
+
                         <td>
                             {% if sortie.participants.contains(app.user) %}
                                 <span class="badge bg-success">Oui</span>
+                            {% else %}
+                                <span class="badge bg-danger">Non</span>
                             {% endif %}
                         </td>
 
@@ -58,19 +74,21 @@
                         </td>
 
                         <td>
-                            <a href='{{ path('sortie_detail', {'id': sortie.id}) }}' class="btn btn-sm btn-outline-primary">Afficher</a>
+                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-primary">Afficher</a>
+
                             {% if app.user %}
                                 {% if sortie.etat.libelle == 'Ouverte' %}
                                     {% if sortie.participants.contains(app.user) %}
-                                        <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Se désister</a>
+                                        <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-desister" data-sortie-id="{{ sortie.id }}">Se désister</a>
                                     {% else %}
-                                        <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">S'inscrire</a>
+                                        <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-inscrire" data-sortie-id="{{ sortie.id }}">S'inscrire</a>
                                     {% endif %}
                                 {% endif %}
+
                                 {% if sortie.organisateur == app.user %}
                                     {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
                                         <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Modifier</a>
-                                        <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Annuler</a>
+                                        <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-danger">Annuler</a>
                                     {% endif %}
                                 {% endif %}
                             {% endif %}
@@ -87,21 +105,84 @@
     </div>
 
     <script>
-        document.getElementById("filterCheckbox").addEventListener("change", function() {
-            let checked = this.checked;
-            //Rajout d'un if pour gérer les utilisateurs non connectés
-            {% if app.user %}
-            let userId = {{ app.user.id }}; // Récupérer l'ID de l'utilisateur connecté
+        // Fonction pour mettre à jour le data-inscrit
+        function updateDataInscrit(sortieId, isInscrit) {
+            const sortieRow = document.querySelector(`.sortie[data-id='${sortieId}']`);
+            if (sortieRow) {
+                sortieRow.dataset.inscrit = isInscrit ? "1" : "0";
+            }
+        }
 
-            document.querySelectorAll(".sortie").forEach(sortie => {
-                let isOrganisateur = parseInt(sortie.getAttribute("data-organisateur")) === userId;
-                sortie.style.display = (checked && !isOrganisateur) ? "none" : "table-row";
+        // Exemple d'appel après inscription ou désinscription
+        document.querySelectorAll('.btn-inscrire').forEach(btn => {
+            btn.addEventListener('click', function (event) {
+                const sortieId = this.dataset.sortieId; // ID de la sortie
+                // Après avoir inscrit l'utilisateur
+                updateDataInscrit(sortieId, true);
+                filterSorties(); // Appliquer les filtres après mise à jour
             });
-            {% else %}
-            // Cacher les checkbox s'il n'y a pas d'utilisateur connecté
-            document.getElementById("filterCheckbox").style.display = "none";
+        });
 
-            {% endif %}
+        document.querySelectorAll('.btn-desister').forEach(btn => {
+            btn.addEventListener('click', function (event) {
+                const sortieId = this.dataset.sortieId; // ID de la sortie
+                // Après avoir désinscrit l'utilisateur
+                updateDataInscrit(sortieId, false);
+                filterSorties(); // Appliquer les filtres après mise à jour
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Récupération des checkbox
+            const filterCheckboxOrganisateur = document.getElementById("filterCheckboxOrganisateur");
+            const filterCheckboxInscrit = document.getElementById("filterCheckboxInscrit");
+            const filterCheckboxNonInscrit = document.getElementById("filterCheckboxNonInscrit");
+
+            // Tableau des checkboxes
+            const checkboxes = [filterCheckboxOrganisateur, filterCheckboxInscrit, filterCheckboxNonInscrit];
+
+            // Fonction pour filtrer les sorties
+            function filterSorties() {
+                document.querySelectorAll(".sortie").forEach(sortie => {
+                    let isOrganisateur = sortie.dataset.organisateur === "1";
+                    let isInscrit = sortie.dataset.inscrit === "1";
+                    let isNonInscrit = sortie.dataset.nonInscrit === "1";
+
+                    let show = true;
+
+                    // Appliquer le bon filtre (un seul peut être actif)
+                    if (filterCheckboxOrganisateur.checked) {
+                        show = isOrganisateur;
+                    } else if (filterCheckboxInscrit.checked) {
+                        show = isInscrit;
+                    } else if (filterCheckboxNonInscrit.checked) {
+                        show = isNonInscrit;
+                    }
+
+                    // Affichage des sorties
+                    sortie.style.display = show ? "" : "none";
+                });
+            }
+
+            // Fonction pour forcer une seule checkbox cochée à la fois
+            function handleCheckboxClick(clickedCheckbox) {
+                checkboxes.forEach(checkbox => {
+                    if (checkbox !== clickedCheckbox) {
+                        checkbox.checked = false; // Décoche les autres
+                    }
+                });
+                filterSorties(); // Appliquer le filtre après changement
+            }
+
+            // Événements pour chaque checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    handleCheckboxClick(this);
+                });
+            });
+
+            // Exécuter le filtre une première fois
+            filterSorties();
         });
     </script>
 {% endblock %}
