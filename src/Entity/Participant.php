@@ -65,9 +65,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Site $site = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $filename = null;
-
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -276,18 +273,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->nom . ' (' . $this->email . ')';
-    }
-
-    public function getFilename(): ?string
-    {
-        return $this->filename;
-    }
-
-    public function setFilename(?string $filename): static
-    {
-        $this->filename = $filename;
-
-        return $this;
     }
 
 }

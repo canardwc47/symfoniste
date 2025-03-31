@@ -1,59 +1,39 @@
-<div class="nav">
-<nav class="navbar navbar-expand-lg border-bottom shadow-sm">
-<div class="container-fluid">
-        <img src="{{ asset('image/logo.PNG') }}" alt="Logo" width="150" height="70" class="d-inline-block align-text-top">
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent"
                 aria-expanded="false"
                 aria-label="Toggle navigation">
-
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
-                       title="Villes">Villes</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
-                       title="Sites">Sites</a>
-                </li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('sortie_liste') }}"
                        title="Accueil">Accueil</a>
                 </li>
+
+
                 {% if app.user %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_create') }}"
                            title="Create">Créer une sortie</a>
                     </li>
-
-                    <li class="nav-item">
-
-                        <a class="nav-link" href="{{ path('participant_add') }}" title="AddParticipant">Ajouter participant</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
-                    </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}"
                            title="Sign out">Sign out</a>
                     </li>
-
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}"
                            title="Sign in">Se connecter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('') }}"
+                           title="Sign in">Mon profil</a>
                     </li>
 
                 {% endif %}
@@ -61,4 +41,3 @@
         </div>
     </div>
 </nav>
-</div>

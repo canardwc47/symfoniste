@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouveau participant{% endblock %}
+{% block title %}New Participant{% endblock %}
 
 {% block body %}
-    <h1>Crée un nouveau participant</h1>
+    <h1>Create new Participant</h1>
 
     {{ include('participant/_form.html.twig') }}
 
-    <a href="{{ path('participant_index') }}">Retour</a>
+    <a href="{{ path('participant_index') }}">back to list</a>
 {% endblock %}

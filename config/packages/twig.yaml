@@ -1,6 +1,4 @@
 twig:
-    globals:
-        app_image_participant_directory: '/uploads/images/participants'
     file_name_pattern: '*.twig'
 
 when@test:
