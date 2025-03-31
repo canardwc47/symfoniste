@@ -3,7 +3,7 @@
 {% block title %}Participant{% endblock %}
 
 {% block body %}
-    <h1>Participant</h1>
+    <h1>Profil de {{ participant.pseudo }}</h1>
 
     <table class="table">
         <tbody>
@@ -13,20 +13,16 @@
                 <img src="{{ asset('image/' ~ participant.filename) }}" alt="Image de profil" width="150" height="150">
             </td>
         </tr>
-            <tr>
-                <th>Id</th>
-                <td>{{ participant.id }}</td>
-            </tr>
+        <tr>
+            <th>Prénom</th>
+            <td>{{ participant.prenom }}</td>
+        </tr>
             <tr>
                 <th>Nom</th>
                 <td>{{ participant.nom }}</td>
             </tr>
             <tr>
-                <th>Prenom</th>
-                <td>{{ participant.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
+                <th>Téléphone</th>
                 <td>{{ participant.telephone }}</td>
             </tr>
             <tr>
@@ -34,22 +30,23 @@
                 <td>{{ participant.email }}</td>
             </tr>
             <tr>
-                <th>Pseudo</th>
-                <td>{{ participant.pseudo }}</td>
+                <th>Ville de rattachement</th>
+                <td>{{ participant.site.nomSite }}</td>
             </tr>
-            <tr>
-                <th>Administrateur</th>
-                <td>{{ participant.administrateur ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Actif</th>
-                <td>{{ participant.actif ? 'Yes' : 'No' }}</td>
-            </tr>
-
         </tbody>
     </table>
+<div class="button-container">
+    <a href="{{ path('sortie_liste') }}" class="btn btn-lg btn-success">Retour</a>
 
-    <a href="{{ path('sortie_liste') }}">Retour à la liste des sorties</a>
+    {% if participant.id == app.user.id %}
+        <a href="{{ path('participant_update', {'id': participant.id}) }}" class="btn btn-lg btn-success">Modifier mon profil</a>
+    {% endif %}
+</div>
+    {#{{ include('participant/_delete_form.html.twig') }}  #}
+
+    {#<a href="{{ path('sortie_liste') }}">Retour à la liste des sorties</a>#}
+
+    {#<a href="{{ path('participant_detail', {'id': participant.id}) }}">edit</a>#}
 
 {#    <a href="{{ path('edit', {'id': participant.id}) }}">edit</a>#}
 
