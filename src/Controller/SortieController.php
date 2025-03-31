@@ -18,6 +18,7 @@ use App\Repository\ParticipantRepository;
 
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
+use App\Service\SortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -83,7 +84,6 @@ final class SortieController extends AbstractController
 
         $sortie = $sortieRepository->find($id);
         $sortie->removeParticipant($participant);
-
 
         // 4️⃣ Sauvegarde en base de données
         $em->persist($sortie);
@@ -159,7 +159,28 @@ final class SortieController extends AbstractController
 
             return $this->redirectToRoute('sortie_liste', ['id'=> $sortie->getId()]);
         }
-        return $this->render('sortie/creer.html.twig', ["sortieForm"=> $sortieForm]);
+
+        return $this->render('sortie/creer.html.twig', [
+            "sortieForm"=> $sortieForm,
+            "sortie" => $sortie
+        ]);
+    }
+
+    #[Route('/sortie/{id}/publier', name: 'sortie_publier', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function publish (
+        int $id,
+        SortieRepository $sortieRepository,
+        SortieService $sortieService,
+        EntityManagerInterface $em): Response
+    {
+        $sortie = $sortieRepository->find($id);
+        if (!$sortie) {
+            throw $this->createNotFoundException('Sortie non trouvée');
+        }
+        $sortieService->publierSortie($sortie, $em);
+
+        $this->addFlash('success', 'Ta sortie a été publiée avec succès!');
+        return $this->redirectToRoute('sortie_liste');
     }
 
 
@@ -208,9 +229,7 @@ final class SortieController extends AbstractController
         $sortie = $sortieRepository ->find($id);
         $site = $siteRepository ->find($sortie->getSite()->getId());
 
-
         $etatAnnule = $etatRepository-> findBy(['libelle'=> 'Annulée']);
-
 
         $annulationForm = $this->createForm(AnnulationType::class, $sortie);
         $annulationForm->handleRequest($request);
