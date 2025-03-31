@@ -75,7 +75,11 @@ class SortieService
         $updatedSorties = [];
 
         foreach ($sorties as $sortie) {
-            if ($sortie->getDateLimiteInscription() <= $currentDate && $sortie->getEtat()->getLibelle() == 'Ouverte' ) {
+            if (($sortie->getDateLimiteInscription() >= $currentDate && count($sortie->getParticipants())<=$sortie->getNbInscriptionsMax()) && $sortie->getEtat()->getLibelle() == 'Clôturée' ) {
+                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+                $sortie->setEtat($etat);
+            }
+            if (($sortie->getDateLimiteInscription() <= $currentDate ||count($sortie->getParticipants())>=$sortie->getNbInscriptionsMax()) && $sortie->getEtat()->getLibelle() == 'Ouverte' ) {
                 $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Clôturée']);
                 $sortie->setEtat($etat);
             }
