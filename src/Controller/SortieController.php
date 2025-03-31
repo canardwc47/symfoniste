@@ -50,48 +50,26 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function inscrire(
         int $id,
-        SortieRepository $sortieRepository,
+        SortieService $sortieService,
         Security $security,
-        ParticipantRepository $participantRepository,
         EntityManagerInterface $em
     ): Response
     {
-        $user = $security->getUser();
-        $participant = $participantRepository->findOneBy(['id' => $user]);
-
-        $sortie = $sortieRepository->find($id);
-        $sortie->addParticipant($participant);
-
-        $em->persist($sortie);
-        $em->flush();
-
+        $sortieService->inscription($id, $security, $em);
         return $this->redirectToRoute('sortie_liste');
     }
-
 
     #[Route('/sortie/{id}/desister', name:'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
-
     public function desister(
         int $id,
-        SortieRepository $sortieRepository,
-        ParticipantRepository $participantRepository,
+        SortieService $sortieService,
         Security $security,
         EntityManagerInterface $em
     ): Response
     {
-        $user = $security->getUser();
-        $participant = $participantRepository->findOneBy(['id' => $user]);
-
-        $sortie = $sortieRepository->find($id);
-        $sortie->removeParticipant($participant);
-
-        // 4️⃣ Sauvegarde en base de données
-        $em->persist($sortie);
-        $em->flush();
-
+        $sortieService->desistement($id, $security, $em);
         return $this->redirectToRoute('sortie_liste');
     }
-
 
     #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
