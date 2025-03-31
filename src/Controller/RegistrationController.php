@@ -35,7 +35,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('sortie_liste');
         }
 
-        return $this->render('registration/register.html.twig', [
+        return $this->render('inscription.html.twig', [
             'registrationForm' => $form,
         ]);
     }

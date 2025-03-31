@@ -42,17 +42,16 @@
             <div class="card-body">
                 <h5 class="card-title text-secondary">Liste des Participants</h5>
                 <ul class="list-group">
+                    {% if sortie.participants %}
                     {% for participant in sortie.participants %}
                         <li class="list-group-item"><a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': participant.id}) }}">{{ participant.pseudo }}</a></li>
                     {% else %}
                         <li class="list-group-item text-muted">Aucun participant pour l'instant</li>
                     {% endfor %}
+                    {% endif %}
                 </ul>
             </div>
         </div>
-
-
-    </article>
 
 
         <div class="text-center mt-4">
