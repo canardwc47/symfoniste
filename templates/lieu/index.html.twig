@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des lieux{% endblock %}
+
+{% block body %}
+    <h1>Liste des lieux</h1>
+
+    <a href="{{ path('lieu_ajouter_Lieu') }}" class="btn btn-sm btn-outline-success">Ajouter un lieu</a>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Ville</th>
+            <th>Rue</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for lieu in lieux %}
+            <tr>
+                <td>{{ lieu.id }}</td>
+                <td>{{ lieu.nomLieu }}</td>
+                <td>{{ lieu.ville }}</td>
+                <td>{{ lieu.rue }}</td>
+                <td>{{ lieu.latitude }}</td>
+                <td>{{ lieu.longitude }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endblock %}
