@@ -60,7 +60,12 @@ final class SortieController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $sortieService->inscription($id, $security, $em);
+        $result = $sortieService->inscription($id, $security, $em);
+        if ($result === "Inscription réussie.") {
+            $this->addFlash('success', $result);
+        } else {
+            $this->addFlash('warning', $result);
+        }
         return $this->redirectToRoute('sortie_liste');
     }
 
@@ -72,7 +77,12 @@ final class SortieController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $sortieService->desistement($id, $security, $em);
+        $result = $sortieService->desistement($id, $security, $em);
+        if ($result === "Désistement enregistré.") {
+            $this->addFlash('success', $result);
+        } else {
+            $this->addFlash('warning', $result);
+        }
         return $this->redirectToRoute('sortie_liste');
     }
 
