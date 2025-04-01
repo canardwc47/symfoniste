@@ -42,6 +42,10 @@ final class ParticipantController extends AbstractController
         $participantForm = $this->createForm(ParticipantType::class, $participant);
         $participantForm->handleRequest($request);
 
+        if (!$this->isGranted("ROLE_ADMIN")){
+            throw $this->createAccessDeniedException("Vous n'avez pas les droits pour faire créer un participant");
+        }
+
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 
             //traitement de l'image
