@@ -29,6 +29,8 @@ class SortieService
         EntityManagerInterface $em
         ) : String
     {
+
+        // Conditions à remplir, message d'erreur ciblé suivant la condition non remplie
         $user = $security->getUser();
         if (!$user) {
             return "Utilisateur non connecté.";
@@ -64,6 +66,8 @@ class SortieService
         EntityManagerInterface $em
     ) : String
     {
+
+        // Conditions à remplir, message d'erreur ciblé suivant la condition non remplie
         $user = $security->getUser();
         if (!$user) {
             return "Utilisateur non connecté.";
@@ -104,6 +108,8 @@ class SortieService
             $em->flush();
     }
 
+
+    // Mise à jour des sorties en fonction de la date et/ou du nombre de participants,
     public function majSorties (
         EntityManagerInterface $em
 ) : array
