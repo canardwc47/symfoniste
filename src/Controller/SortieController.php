@@ -49,6 +49,7 @@ final class SortieController extends AbstractController
             'sortiesInscrit' => $sortiesInscrit,
             'sortiesNonInscrit' => $sortiesNonInscrit
         ]);
+
     }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
