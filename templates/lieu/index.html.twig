@@ -10,20 +10,19 @@
     <table class="table">
         <thead>
         <tr>
-            <th>Id</th>
-            <th>Nom</th>
             <th>Ville</th>
+            <th>Nom</th>
             <th>Rue</th>
             <th>Latitude</th>
             <th>Longitude</th>
+
         </tr>
         </thead>
         <tbody>
         {% for lieu in lieux %}
             <tr>
-                <td>{{ lieu.id }}</td>
-                <td>{{ lieu.nomLieu }}</td>
                 <td>{{ lieu.ville }}</td>
+                <td>{{ lieu.nomLieu }}</td>
                 <td>{{ lieu.rue }}</td>
                 <td>{{ lieu.latitude }}</td>
                 <td>{{ lieu.longitude }}</td>

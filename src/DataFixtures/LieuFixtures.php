@@ -17,7 +17,7 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
 
         $ville = $manager->getRepository(Ville::class)->findAll();
 
-        $prefix = ["Au", "The", "El", "My", "Du", "", "", "Das", "One", "Ein"];
+        $prefix = ["Au", "The", "El", "My", "Das", "One", "Ein", "Our", "Nuestro", "Notre", "Mein"];
         $adjectives = ["Nocturne", "Gemütlich","Rustikal", "Secret", "Abgefahren","Cosmique", "Rouge", "Noir", "Bleu", "Doré", "Fou", "Secret", "Sexy", "Famoso", "Caliente", "Dancing", "Special", "Chill", "Crazy"];
         $nouns = ["Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Piano", "Brasserie", "Canaille", "Loutre", "Bar", "Mondschein", "Versteck", "Gasthaus", "Rooftop", "Kantine"];
 

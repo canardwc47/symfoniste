@@ -36,7 +36,7 @@ class ParticipantFixtures extends Fixture implements DependentFixtureInterface
 
             ];
             $email = strtolower(str_replace(' ', '', $prenom) . '.' . str_replace(' ', '', $nom) . '@' . $domains[array_rand($domains)]);
-            $pseudo = strtolower($prenom . rand(1, 999));
+            $pseudo = strtolower($prenom . rand(1, 199));
 
             $participant = new Participant();
             $participant

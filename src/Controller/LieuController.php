@@ -6,6 +6,7 @@ use App\Entity\Lieu;
 use App\Form\LieuType;
 use App\Repository\LieuRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,8 +18,14 @@ final class LieuController extends AbstractController
     #[Route(name: 'index', methods: ['GET'])]
     public function index(LieuRepository $lieuRepository): Response
     {
+        $lieux = $lieuRepository->createQueryBuilder('l')
+            ->join('l.ville', 'v')
+            ->orderBy('v.nom', 'ASC')
+            ->addOrderBy('l.nomLieu', 'ASC')
+            ->getQuery()
+            ->getResult();
         return $this->render('lieu/index.html.twig', [
-            'lieux' => $lieuRepository->findAll(),
+            'lieux' => $lieux,
         ]);
     }
 

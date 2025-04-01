@@ -56,7 +56,8 @@ class SortieType extends AbstractType implements FormTypeInterface
                     'query_builder' => function (EntityRepository $er) {
         return $er->createQueryBuilder('l')
             ->join('l.ville', 'v')
-            ->orderBy('v.nom', 'ASC');
+            ->orderBy('v.nom', 'ASC')
+            ->addOrderBy('l.nomLieu', 'ASC');
     },
 
             ])
