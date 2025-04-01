@@ -23,9 +23,13 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
 
 
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 40; $i++) {
             $lieu = new Lieu();
-            $fakename = $prefix[array_rand($prefix)] . " " . $adjectives[array_rand($adjectives)] . " " . $nouns[array_rand($nouns)];
+            if (rand(0, 1) === 0) {
+                $fakename = $prefix[array_rand($prefix)] . " " . $adjectives[array_rand($adjectives)] . " " . $nouns[array_rand($nouns)];
+            } else {
+                $fakename = $prefix[array_rand($prefix)] . " " . $nouns[array_rand($nouns)] . " " . $adjectives[array_rand($adjectives)];
+            }
             $lieu->setNomLieu($fakename);
             $lieu->setRue($faker->streetName);
             $lieu->setLatitude($faker->randomFloat(6, 46.5, 50.0));

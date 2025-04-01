@@ -39,15 +39,15 @@ class SortieService
         if (!$participant || !$sortie) {
             return "Sortie ou participant introuvable.";
         }
+        if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
+            return "La sortie n'est pas ouverte.";
+        }
         $currentDate = new \DateTimeImmutable();
         if ($sortie->getDateLimiteInscription() < $currentDate) {
             return "La date limite d'inscription est dépassée.";
         }
         if (count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax()) {
             return "Le nombre maximum de participants est atteint.";
-        }
-        if ($sortie->getEtat()->getLibelle() !== 'Ouverte') {
-            return "La sortie n'est pas ouverte.";
         }
         if ($sortie->getParticipants()->contains($participant)) {
             return "Vous êtes déjà inscrit(e) à cette sortie.";
@@ -75,6 +75,9 @@ class SortieService
         }
         if (!$sortie->getParticipants()->contains($participant)) {
             return "Vous n'êtes pas inscrit(e) à cette sortie.";
+        }
+        if ($sortie->getOrganisateur()===($participant)) {
+            return "L'organisateur ne peut pas se désister de sa sortie.";
         }
         $currentDate = new \DateTimeImmutable();
         if ($sortie->getDateHeureDebut() < $currentDate) {
