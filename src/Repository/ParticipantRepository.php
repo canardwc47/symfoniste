@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -11,8 +13,11 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
-class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface
+class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface, UserLoaderInterface
 {
 
     // Test constructeur pour vérifier si le formulaire marche
@@ -30,25 +35,14 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
      *
      * @throws UserNotFoundException if the user is not found
      */
-    public function loadUserByIdentifier(string $identifier): UserInterface
+    public function loadUserByIdentifier($identifier): UserInterface
     {
-        return $this -> createQueryBuilder('p')
-            ->where('p.email =:identifier OR p.pseudo =:identifer')
+        return $this->createQueryBuilder('p')
+            ->where('p.email = :identifier OR p.pseudo = :identifier')
             ->setParameter('identifier', $identifier)
             ->getQuery()
             ->getOneOrNullResult();
     }
-   /* {
-        $repository = $this->getEntityManager()->getRepository(Participant::class);
-        $user = $repository->findOneBy(['email' => $identifier]);
-        if (!$user) {
-             $user = $repository->findOneBy(['pseudo' => $identifier]);
-        }
-        if (!$user){
-            throw new UserNotFoundException('Participant non trouvé');
-        }
-        return $user;
-    }*/
 
     /**
      * @deprecated since Symfony 5.3, loadUserByIdentifier() is used instead
@@ -101,5 +95,4 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         // 1. persist the new password in the user storage
         // 2. update the $user object with $user->setPassword($newHashedPassword);
     }
-
 }

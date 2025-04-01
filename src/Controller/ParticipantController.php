@@ -9,6 +9,7 @@ use App\Service\FileUploader;
 use App\Services\Uploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,8 +27,6 @@ final class ParticipantController extends AbstractController
             'participants' => $participantRepository->findAll(),
         ]);
     }
-
-
 
 
     #[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
@@ -72,13 +71,20 @@ final class ParticipantController extends AbstractController
     }
 
 
-
     #[Route('/detail/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function detail(Participant $participant): Response
+    public function detail(
+        Participant $participant,
+        Security $security,
+
+    ): Response
     {
+        if ($security->getUser()) {
         return $this->render('participant/detail.html.twig', [
             'participant' => $participant,
         ]);
+    } else {
+            return $this->redirectToRoute('app_login');
+        }
     }
 
 
