@@ -35,7 +35,9 @@
                     </li>
 
                     <li class="nav-item">
+                    {% if is_granted("ROLE_ADMIN") %}
                         <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                    {% endif %}
                     </li>
 
                     <li class="nav-item">
