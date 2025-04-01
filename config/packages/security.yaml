@@ -7,7 +7,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\Participant
-                property: email
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,7 +18,7 @@ security:
             custom_authenticator: App\Security\AppAuthenticator
             logout:
                 path: app_logout
-                target: '/sortie'
+                target: '/'
                 # where to redirect after logout
                 # target: app_any_route
 

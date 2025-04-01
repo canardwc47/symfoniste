@@ -28,28 +28,37 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         $etat = $manager->getRepository(Etat::class)->findAll();
         $participants = $manager->getRepository(Participant::class)->findAll();
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $sortie = new Sortie();
             $sortie->setNomSortie($faker->sentence(2));
-            $sortie->setDateHeureDebut(
-                DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 days', '+2 months'))
-            );
+            $sortie->setEtat($faker->randomElement($etat));
             $sortie->setDuree($faker->numberBetween(30, 240));
-            $sortie->setDateLimiteInscription(
-                DateTimeImmutable::createFromMutable($faker->dateTimeBetween('now', '+1 month'))
-            );
+            $etatSortie = $sortie->getEtat()->getLibelle();
+                if ($etatSortie == 'Créée' || $etatSortie == 'Ouverte') {
+                    $dateHeureDebut = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 days', '+2 months'));
+                } elseif ($etatSortie == 'Passée' || $etatSortie == 'Archivée') {
+                    $dateHeureDebut = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-2 months', '-1 month'));
+                } else {
+                    $dateHeureDebut = DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 week', '+1 week'));
+                }
+            $sortie->setDateHeureDebut($dateHeureDebut);
+            $dateInscription = $dateHeureDebut->sub(new \DateInterval('P1M'));
+            $dateDebutString = $dateHeureDebut->format('Y-m-d H:i:s');
+            $dateInscriptionString = $dateInscription->format('Y-m-d H:i:s');
+            $dateLimiteInscription = DateTimeImmutable::createFromMutable($faker->dateTimeBetween( $dateInscriptionString, $dateDebutString));
+            $sortie->setDateLimiteInscription($dateLimiteInscription);
+
             $sortie->setNbInscriptionsMax($faker->numberBetween(5, 50));
             $sortie->setInfosSortie($faker->paragraph);
             $sortie->setOrganisateur($faker->randomElement($participants));
             $sortie->addParticipant($sortie->getOrganisateur());
-            //for ($i = 0; $i < 3; $i++) {
-            $sortie->addParticipant($faker->randomElement($participants));
-            //}
+            if ($sortie->getEtat()->getLibelle() != 'Créée') {
+                for($y = 0; $y < rand(1,$sortie->getNbInscriptionsMax()); $y++) {
+                    $sortie->addParticipant($faker->randomElement($participants));
+                }
+            }
             $sortie->setLieu($faker->randomElement($lieux));
-            $sortie->setEtat($faker->randomElement($etat));
-            //$sortie->setSite($faker->randomElement($sites));
             $sortie->setSite($sortie->getOrganisateur()->getSite());
-
             $manager->persist($sortie);
         }
 
