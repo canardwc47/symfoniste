@@ -54,13 +54,13 @@ class SortieRepository extends ServiceEntityRepository
                 ->setParameter('nom', '%' . $nomDeSortie . '%');
         }
         //Recherche si je suis l'organisateur de la sortie
-        if (true) {
+        if ($organisateur) {
             $qB->andWhere('s.organisateur = :organisateur')
                 ->setParameter('organisateur', $user); // Utiliser l'utilisateur connecté
         }
 
         //Recherche si je suis inscrit a la sortie
-        if (true) {
+        if ($inscrit) {
             $qB->andWhere(':participant MEMBER OF s.participants')
                 ->setParameter('participant', $user);
         }
@@ -91,6 +91,7 @@ class SortieRepository extends ServiceEntityRepository
                 ->setParameter('lieu', $lieu);
         }
 
+//        dd($qB->getDQL());
 
         return $qB->addOrderBy('s.dateHeureDebut', 'DESC')->getQuery()->getResult();
     }

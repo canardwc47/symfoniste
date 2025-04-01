@@ -43,7 +43,7 @@ final class SortieController extends AbstractController
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
         $rechercheForm->handleRequest($request);
 
-        if ($rechercheForm->isSubmitted() && $rechercheForm->isValid()) {
+        if ($rechercheForm->isSubmitted() ) {
             $sorties = $sortieRepository->rechercheSortie($recherche, $security);
         } else {
             $sorties = $sortieRepository->findAll();

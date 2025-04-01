@@ -4,73 +4,41 @@
 
 {% block body %}
     <div class="container mt-4">
-        {% for sortie in sorties %}
-            <tr>
-                <td>{{ sortie.nomSortie }} ({{ sortie.id }})</td>
-                <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
-                <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                <td><span class="badge bg-primary">{{ sortie.participants.count() }}</span>
-                    / {{ sortie.nbInscriptionsMax }}</td>
+        <h2 class="mb-3">Rechercher une sortie</h2>
 
-                <td>
-                    {% if sortie.etat.libelle == 'Créée' %}
-                        <span class="badge bg-warning text-white">{{ sortie.etat.libelle }}</span>
-                    {% elseif sortie.etat.libelle == 'Ouverte' %}
-                        <span class="badge bg-info text-white">{{ sortie.etat.libelle }}</span>
-                    {% elseif sortie.etat.libelle == 'Clôturée' %}
-                        <span class="badge bg-danger text-white">{{ sortie.etat.libelle }}</span>
-                    {% else %}
-                        <span class="badge bg-secondary text-grey">{{ sortie.etat.libelle }}</span>
-                    {% endif %}
-                </td>
+        {# Formulaire de recherche #}
+        <form method="post" action="{{ path('sortie_liste') }}" class="mb-4 p-3 border rounded bg-light">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form_row(rechercheForm.nom) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(rechercheForm.dateDebut) }}
+                </div>
+                <div class="col-md-4">
+                    {{ form_row(rechercheForm.lieu) }}
+                </div>
+            </div>
 
-                <td>
-                    {% if sortie.participants.contains(app.user) %}
-                        <span class="badge bg-success">Oui</span>
-                    {% else %}
-                        <span class="badge bg-danger">Non</span>
-                    {% endif %}
-                </td>
+            <div class="row g-3 mt-2">
+                <div class="col-md-3">
+                    {{ form_row(rechercheForm.organisateur) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(rechercheForm.participants) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(rechercheForm.nonParticipants) }}
+                </div>
+                <div class="col-md-3">
+                    {{ form_row(rechercheForm.sorties) }}
+                </div>
+            </div>
 
-                <td>
-                    <a type="button" class="btn btn-outline-secondary"
-                       href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
-                        {{ sortie.organisateur.pseudo }}
-                    </a>
-                </td>
-
-                <td>
-                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-primary">Afficher</a>
-
-                    {% if app.user %}
-                        {% if sortie.etat.libelle == 'Ouverte' %}
-                            {% if sortie.participants.contains(app.user) %}
-                                <a href="{{ path('sortie_desister', {'id': sortie.id}) }}"
-                                   class="btn btn-sm btn-outline-success btn-desister"
-                                   data-sortie-id="{{ sortie.id }}">Se désister</a>
-                            {% else %}
-                                <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}"
-                                   class="btn btn-sm btn-outline-success btn-inscrire"
-                                   data-sortie-id="{{ sortie.id }}">S'inscrire</a>
-                            {% endif %}
-                        {% endif %}
-
-                        {% if sortie.organisateur == app.user %}
-                            {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
-                                <a href="{{ path('sortie_update', {'id': sortie.id}) }}"
-                                   class="btn btn-sm btn-outline-success">Modifier</a>
-                                <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}"
-                                   class="btn btn-sm btn-outline-danger">Annuler</a>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
-            </tr>
-        {% endfor %}
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">{{ rechercheForm.search.vars.label }}</button>
+            </div>
+        </form>
         <h2 class="text-center mb-4">Les Sorties !</h2>
 
         <div class="table-responsive">
