@@ -17,13 +17,13 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
 
         $ville = $manager->getRepository(Ville::class)->findAll();
 
-        $prefix = ["Au", "The", "El", "My", "Du"];
-        $adjectives = ["Fou", "Electro", "VIP", "Nocturne", "Secret", "Cosmique", "Rouge", "Noir", "Bleu", "Doré", "Fou", "Secret", "Sexy", "Famoso", "Caliente"];
-        $nouns = ["Bouffe", "Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Perroquet", "Piano", "Brasserie", "Canaille", "Loutre"];
+        $prefix = ["Au", "The", "El", "My", "Du", "", "", "Das"];
+        $adjectives = ["Nocturne", "Gemütlich","Rustikal", "Secret", "Abgefahren","Cosmique", "Rouge", "Noir", "Bleu", "Doré", "Fou", "Secret", "Sexy", "Famoso", "Caliente", "Dancing", "Special", "Chill", "Crazy"];
+        $nouns = ["Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Piano", "Brasserie", "Canaille", "Loutre", "Bar"];
 
 
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $lieu = new Lieu();
             $fakename = $prefix[array_rand($prefix)] . " " . $adjectives[array_rand($adjectives)] . " " . $nouns[array_rand($nouns)];
             $lieu->setNomLieu($fakename);
