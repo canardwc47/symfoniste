@@ -30,7 +30,7 @@ final class ParticipantController extends AbstractController
 
 
 
-    #[Route('/add', name: 'add', methods: ['GET', 'POST'])]
+    #[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
                         FileUploader $fileUploader,
@@ -63,7 +63,7 @@ final class ParticipantController extends AbstractController
             return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('participant/add.html.twig', [
+        return $this->render('participant/ajouter.html.twig', [
             'participant' => $participant,
             'form' =>  $participantForm,
             'app_image_participant_directory' => $this->getParameter('app.images_participant_directory'),
@@ -111,7 +111,7 @@ final class ParticipantController extends AbstractController
             return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('participant/update.html.twig', [
+        return $this->render('participant/modifier.html.twig', [
             'participant' => $participant,
             'form' => $participantForm,
         ]);
