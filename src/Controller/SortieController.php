@@ -34,49 +34,27 @@ final class SortieController extends AbstractController
 
 
     #[Route('/', name: 'sortie_liste', methods: ['GET', 'POST'])]
-    public function liste
-    (SortieRepository       $sortieRepository,
-     EntityManagerInterface $em,
-     Request                $request,
-     SortieService          $sortieService,
-     Security               $security
-
-    ): Response
-    {
-
+    public function liste(
+        SortieRepository $sortieRepository,
+        Request $request,
+        Security $security
+    ): Response {
         $recherche = new Recherche();
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
-
         $rechercheForm->handleRequest($request);
 
-
         if ($rechercheForm->isSubmitted() && $rechercheForm->isValid()) {
-            $sorties = $sortieRepository->rechercheSortie($recherche, $security); // Passer l'objet Recherche
+            $sorties = $sortieRepository->rechercheSortie($recherche, $security);
         } else {
             $sorties = $sortieRepository->findAll();
         }
-        $participant = $this->getUser();
-        $updatedSorties = $sortieService->majSorties($em);
-
-        if ($request->isXmlHttpRequest()) {
-            return $this->render('sortie/_liste.html.twig', [
-                'sorties' => $sorties
-            ]);
-        }
-        $sortiesOrganisateur = $em->getRepository(Sortie::class)->findByOrganisateur($participant);
-        $sortiesInscrit = $em->getRepository(Sortie::class)->findByInscrit($participant);
-        $sortiesNonInscrit = $em->getRepository(Sortie::class)->findByNonInscrit($participant);
 
         return $this->render('sortie/liste.html.twig', [
-//            'sorties' => $sorties,
-            'rechercheForm' => $rechercheForm->createView(),
-            'sorties' => $updatedSorties,
-            'sortiesOrganisateur' => $sortiesOrganisateur,
-            'sortiesInscrit' => $sortiesInscrit,
-            'sortiesNonInscrit' => $sortiesNonInscrit
+            'sorties' => $sorties,
+            'rechercheForm' => $rechercheForm->createView()
         ]);
-
     }
+
 
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
