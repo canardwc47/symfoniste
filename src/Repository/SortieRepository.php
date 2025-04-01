@@ -4,9 +4,14 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Form\Models\Recherche;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use http\Client\Curl\User;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Sortie>
@@ -22,103 +27,72 @@ class SortieRepository extends ServiceEntityRepository
      * @return Sortie[] Returns an array of Sortie objects
      */
 
-//    public function findByRechercheSortie(?string $filtre, ?Participant $participant = null): array
-//    {
-//        $qb = $this->createQueryBuilder('s');
-//
-//        // Filtre pour les sorties passées
-//        if ($filtre === 'passees') {
-//            $qb->where('s.dateHeureDebut < :now')
-//                ->setParameter('now', new \DateTime()); // Correction de la syntaxe
-//        }
-//
-//        // Filtre pour les sorties organisées par le participant
-//        elseif ($filtre === 'organisateur' && $participant) {
-//            $qb->andWhere('s.organisateur = :participant')
-//                ->setParameter('participant', $participant); // Correction de la syntaxe
-//        }
-//
-//        // Filtre pour les sorties auxquelles le participant est inscrit
-//        elseif ($filtre === 'inscrit' && $participant) {
-//            $qb->join('s.participants', 'p')
-//                ->andWhere('p = :participant')
-//                ->setParameter('participant', $participant); // Correction de la syntaxe
-//        }
-//
-//        // Filtre pour les sorties auxquelles le participant n'est pas inscrit
-//        elseif ($filtre === 'noninscrit' && $participant) {
-//            $qb->join('s.participants', 'p')
-//                ->andWhere('p IS NULL OR p != :participant')
-//                ->setParameter('participant', $participant); // Correction de la syntaxe
-//        }
-//        return $qb->getQuery()->getResult();
-//    }
+    public function rechercheSortie(
+        Recherche $recherche,
+        Security  $security)
+    {
+
+
+        $qB = $this->createQueryBuilder('s');
+        $user = $security->getUser();
+
+
+        $nomDeSortie = $recherche->getNom();
+        $dateDeSortie = $recherche->getDateDebut();
+        $now = new \DateTimeImmutable();
+        $organisateur = $recherche->getOrganisateur();
+        $inscrit = $recherche->getParticipant();
+        $nonInscrit = $recherche->getNonParticipant();
+        $sortiesPassees = $recherche->getDateDebut();
+        $lieu = $recherche->getLieu();
 
 
 
-//    public function findByOrganisateur($organisateur): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.organisateur = :organisateur')
-//            ->setParameter('organisateur', $organisateur)
-//            ->orderBy('s.dateHeureDebut', 'DESC')// Trier par date décroissante par exemple
-//            ->getQuery()
-//            ->getResult();
-//    }
-//
-//    public function findByInscrit($participant): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->join('s.participants', 'p') // Jointure avec la table des participants
-//            ->andWhere('p = :participant')
-//            ->setParameter('participant', $participant)
-//            ->orderBy('s.dateHeureDebut', 'DESC')
-//            ->getQuery()
-//            ->getResult();
-//    }
-//
-//    public function findByNonInscrit($participant): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->join('s.participants', 'p') // Jointure avec la table des participants
-//            ->andWhere('p IS NULL OR p != :participant')
-//            ->setParameter('participant', $participant)
-//            ->orderBy('s.dateHeureDebut', 'DESC')
-//            ->getQuery()
-//            ->getResult();
-//    }
-//
-//
-//    public function findBySortiesPasses($sortiesPasses): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.dateHeureDebut < :sortiesPasses')
-//            ->setParameter('sortiesPasses', $sortiesPasses)
-//            ->getQuery()
-//            ->getResult();
-//    }
-    //    /**
-    //     * @return Sortie[] Returns an array of Sortie objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+        //Recherche par nom de Sortie
+        if ($nomDeSortie) {
+            $qB->andWhere('s.nomSortie LIKE :nom')
+                ->setParameter('nom', '%' . $nomDeSortie . '%');
+        }
+        //Recherche si je suis l'organisateur de la sortie
+        if (true) {
+            $qB->andWhere('s.organisateur = :organisateur')
+                ->setParameter('organisateur', $user); // Utiliser l'utilisateur connecté
+        }
 
-    //    public function findOneBySomeField($value): ?Sortie
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        //Recherche si je suis inscrit a la sortie
+        if (true) {
+            $qB->andWhere(':participant MEMBER OF s.participants')
+                ->setParameter('participant', $user);
+        }
+//
+//        // Filtre pour non inscrit
+//        if (true) {
+//            $qB->andWhere(':user NOT MEMBER OF s.participants')
+//                ->setParameter('user', $user);
+//        }
+//
+//        // Recherche par date de sortie
+//        if ($dateDeSortie) {
+//            $dateDeSortieString = $dateDeSortie->format('Y-m-d');
+//            $qB->andWhere('DATE(s.dateHeureDebut) = :dateDeSortie')
+//                ->setParameter('dateDeSortie', $dateDeSortieString);
+//        }
+//
+//        // Recherche des sorties passées
+//        if ($sortiesPassees) {
+//            $now = new \DateTimeImmutable();
+//            $qB->andWhere('s.dateHeureDebut < :now')
+//                ->setParameter('now', $now);
+//        }
+
+        //Recherche par lieu de sorties
+        if ($lieu) {
+            $qB->andWhere('s.lieu LIKE :lieu')
+                ->setParameter('lieu', $lieu);
+        }
+
+
+        return $qB->addOrderBy('s.dateHeureDebut', 'DESC')->getQuery()->getResult();
+    }
+
 }

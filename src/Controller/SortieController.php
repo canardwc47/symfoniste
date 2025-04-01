@@ -6,6 +6,7 @@ use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Form\AnnulationType;
 use App\Form\LieuType;
+use App\Form\Models\Recherche;
 use App\Form\RechercheType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
@@ -24,88 +25,39 @@ final class SortieController extends AbstractController
 {
 
 
+    #[Route('/sortie', name: 'sortie_liste', methods: ['GET', 'POST'])]
+    public function liste
+    (SortieRepository $sortieRepository,
+    Request $request,
+    Security $security
 
-    #[Route('/sortie', name: 'sortie_liste', methods: ['GET'])]
-    public function liste(SortieRepository $sortieRepository): Response
+    ): Response
     {
-        $sorties = $sortieRepository->findAll();
+
+        $recherche = new Recherche();
+        $rechercheForm = $this->createForm(RechercheType::class, $recherche);
+
+        $rechercheForm->handleRequest($request);
+
+
+
+        if ($rechercheForm->isSubmitted() && $rechercheForm->isValid()) {
+            $sorties = $sortieRepository->rechercheSortie($recherche, $security); // Passer l'objet Recherche
+        } else {
+            $sorties = $sortieRepository->findAll();
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('sortie/_liste.html.twig', [
+                'sorties' => $sorties
+            ]);}
 
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
+            'rechercheForm'=> $rechercheForm->createView()
         ]);
     }
 
-
-
-    #[Route('/sortie/recherche', name: 'sortie_recherche', methods: ['GET', 'POST'])]
-    public function recherche(
-        Request          $request,
-        SortieRepository $sortieRepository,
-        Security         $security): Response
-    {
-        // Créer le formulaire de recherche
-        $form = $this->createForm(RechercheType::class);
-        $form->handleRequest($request);
-
-        // Récupérer l'utilisateur connecté
-        $user = $this->getUser();
-
-        // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
-        if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour rechercher des sorties.');
-            return $this->redirectToRoute('app_login');
-        }
-
-        // Créer le QueryBuilder pour filtrer les sorties
-        $queryBuilder = $sortieRepository->createQueryBuilder('s');
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Filtre par nom de sortie
-            if ($form->get('nomSortie')->getData()) {
-                $queryBuilder->andWhere('s.nomSortie LIKE :nomSortie')
-                    ->setParameter('nomSortie', '%' . $form->get('nomSortie')->getData() . '%');
-            }
-
-            // Filtre par date limite d'inscription
-            if ($form->get('dateLimiteInscription')->getData()) {
-                $queryBuilder->andWhere('s.dateLimiteInscription = :dateLimiteInscription')
-                    ->setParameter('dateLimiteInscription', $form->get('dateLimiteInscription')->getData());
-            }
-
-            // Filtre par organisateur (vérifier si l'utilisateur est l'organisateur)
-            if ($form->get('organisateur')->getData()) {
-                $queryBuilder->andWhere('s.organisateur = :user')
-                    ->setParameter('user', $user);
-            }
-
-            // Filtre par inscription (vérifier si l'utilisateur est inscrit)
-            if ($form->get('participants')->getData()) {
-                $queryBuilder->andWhere(':user MEMBER OF s.participants')
-                    ->setParameter('user', $user);
-            }
-
-            // Filtre par non-inscription
-            if ($form->get('nonParticipants')->getData()) {
-                $queryBuilder->andWhere(':user NOT MEMBER OF s.participants')
-                    ->setParameter('user', $user);
-            }
-
-            // Filtre par sorties passées
-            if ($form->get('sorties')->getData()) {
-                $queryBuilder->andWhere('s.dateHeureDebut < :now')
-                    ->setParameter('now', new \DateTimeImmutable());
-            }
-        }
-
-        // Exécuter la requête et obtenir les résultats
-        $sorties = $queryBuilder->getQuery()->getResult();
-
-        // Rendre la vue avec les résultats
-        return $this->render('sortie/recherche.html.twig', [
-            'form' => $form->createView(),
-            'sorties' => $sorties,
-        ]);
-    }
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function inscrire(
