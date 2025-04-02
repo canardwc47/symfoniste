@@ -3,7 +3,6 @@
 {% block title %}Participant{% endblock %}
 
 {% block body %}
-
     <h1>Profil de {{ participant.pseudo }}</h1>
 
     <table class="table">
@@ -38,7 +37,7 @@
         </tbody>
     </table>
 
-    <div class="button-container">
+    {% if participant.id== app.user.id %}
 
 <h3>Historique des sorties</h3>
 
@@ -56,18 +55,20 @@
     </thead>
     <tbody>
     {% for detailSortie in detailSorties %}
-    <tr>
-    <td>{{ detailSortie.sortie_date.format('d/m/Y à H:i') }} </td>
-    <td>{{ detailSortie.sortie_nom }}</td>
-    <td>{{ detailSortie.sortie_organisateur }}</td>
-    <td>{{ detailSortie.ville_nom }}</td>
-    <td>{{ detailSortie.lieu_nom }}</td>
-    <td>{{ detailSortie.etat_libelle }}</td>
-    </tr>
+        <tr>
+            <td>{{ detailSortie.sortie_date.format('d/m/Y à H:i') }} </td>
+            <td>{{ detailSortie.sortie_nom }}</td>
+            <td>{{ detailSortie.sortie_organisateur }}</td>
+            <td>{{ detailSortie.ville_nom }}</td>
+            <td>{{ detailSortie.lieu_nom }}</td>
+            <td>{{ detailSortie.etat_libelle }}</td>
+        </tr>
 
     {% endfor %}
     </tbody>
 </table>
+
+{% endif %}
 
     <div class="button-container">
     <a href="{{ path('sortie_liste') }}" class="btn btn-lg btn-success">Retour</a>
