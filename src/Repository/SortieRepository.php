@@ -98,7 +98,7 @@ class SortieRepository extends ServiceEntityRepository
 
 
 
-//        dd($qB->getDQL());
+
 
         return $qB->
         getQuery()

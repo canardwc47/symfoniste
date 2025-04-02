@@ -15,7 +15,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
 class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface, UserLoaderInterface
 {
@@ -47,10 +46,7 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
     /**
      * @deprecated since Symfony 5.3, loadUserByIdentifier() is used instead
      */
-    public function loadUserByUsername($username): UserInterface
-    {
-        return $this->loadUserByIdentifier($username);
-    }
+
 
     /**
      * Refreshes the user after being reloaded from the session.

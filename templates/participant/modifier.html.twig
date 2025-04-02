@@ -5,9 +5,14 @@
 {% block body %}
     <h1>Edit Participant</h1>
 
-    {{ include('participant/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_start(form) }}
 
-    <a href="{{ path('participant_index') }}">back to list</a>
+    {{ form_widget(form) }}
 
-    {{ include('participant/supprimer.html.twig') }}
+    <button class="btn">{{ button_label|default('Update') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('participant_detail', {'id': app.user.id}) }}">back to list</a>
+
+    {#    {{ include('participant/supprimer.html.twig') }}#}
 {% endblock %}

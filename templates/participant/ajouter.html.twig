@@ -9,10 +9,10 @@
 
     {{ form_widget(form) }}
 
-
-    <button class="btn">{{ button_label|default('Save') }}</button>
     {{ form_end(form) }}
 
+    {#<button class="btn">{{ button_label|default('Enregistrer') }}</button>#}
+    <button type="submit" class="btn btn-sm btn-success">Enregistrer</button>
 
-    <a href="{{ path('participant_index') }}">Retour</a>
+    <a href="#">Retour</a>
 {% endblock %}

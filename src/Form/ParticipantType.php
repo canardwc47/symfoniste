@@ -20,18 +20,7 @@ class ParticipantType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $participant = $event->getData();
-            if ($participant && $participant->getFilename()){
-                $participantForm = $event->getForm();
-                $participantForm->add('deleteImage', CheckboxType::class, [
-                    'required' => false,
-                    'mapped' => false,
-            ]);
-
-                $participantForm
-
-                ->add('image', FileType::class, [
+        $builder->add('images', FileType::class, [
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
@@ -51,21 +40,12 @@ class ParticipantType extends AbstractType
                 ->add('email')
                 ->add('pseudo')
                 ->add('mdp')
-                ->add('administrateur')
-                ->add('actif')
-                ->add('sorties', EntityType::class, [
-                    'class' => Sortie::class,
-                    'choice_label' => 'id',
-                    'multiple' => true,
-                ])
-                ->add('site', EntityType::class, [
-                    'class' => Site::class,
-                    'choice_label' => 'id',
-                ]);
+            ;
+                #->add('administrateur')
+                #->add('actif')
+                #->add('sorties', EntityType::class, ['class' => Sortie::class,'choice_label' => 'id','multiple' => true,]);
+                #->add('site', EntityType::class, ['class' => Site::class,'choice_label' => 'id',]);
             }
-        });
-
-    }
 
 
     public function configureOptions(OptionsResolver $resolver): void

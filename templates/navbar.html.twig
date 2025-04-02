@@ -13,15 +13,18 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('sortie_liste') }}"
                        title="Accueil">Accueil</a>
                 </li>
 
                 {% if app.user %}
+                {% if is_granted("ROLE_ADMIN") %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_liste') }}"
                            title="Villes">Villes</a>
+                {% endif %}
                     </li>
 
                     <li class="nav-item">
@@ -35,7 +38,14 @@
 
                     <li class="nav-item">
                     {% if is_granted("ROLE_ADMIN") %}
-                        <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                        <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                    {% endif %}
+                    </li>
+
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_liste') }}"
+                           title="Sites">Sites</a>
                     {% endif %}
                     </li>
 
@@ -45,17 +55,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}"
-                           title="Sign out">Sign out</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_liste') }}"
-                           title="Sites">Admin : Sites</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('participant_index') }}"
-                           title="Sites">Admin : Participants</a>
+                           title="Sign out">Se déconnecter</a>
                     </li>
 
                 {% else %}
@@ -63,8 +63,8 @@
                         <a class="nav-link" href="{{ path('app_login') }}"
                            title="Sign in">Se connecter</a>
                     </li>
-
                 {% endif %}
+
             </ul>
         </div>
     </div>
