@@ -27,28 +27,18 @@ class SortieRepository extends ServiceEntityRepository
      * @return Sortie[] Returns an array of Sortie objects
      */
 
-    public function afficherSorties(): array
-    {
-        return $this->createQueryBuilder('s')
-            ->select('s')
-            ->join('s.etat', 'e')
-            ->where('e.libelle != :etat')
-            ->setParameter('etat', 'Archivée')
-            ->orderBy('s.dateHeureDebut', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
     public function rechercheSortie(
         Recherche $recherche,
         Security  $security)
     {
-
         $qB = $this->createQueryBuilder('s')
             ->leftJoin('s.lieu', 'lieu')->addSelect('lieu')
             ->leftJoin('s.participants', 'p')->addSelect('p')
             ->leftJoin('s.organisateur', 'o')->addSelect('o')
             ->leftJoin('s.etat', 'e')->addSelect('e')
+            ->where('e.libelle != :etat')
+            ->setParameter('etat', 'Archivée')
+            ->orderBy('s.dateHeureDebut', 'DESC')
             ->leftJoin('s.site', 'site')->addSelect('site');
             //->select('s')
 //            ->distinct();
