@@ -70,6 +70,7 @@ class SortieType extends AbstractType implements FormTypeInterface
     {
         $resolver->setDefaults([
             'data_class' => Sortie::class,
+            'organisateur' => null,
         ]);
     }
 }

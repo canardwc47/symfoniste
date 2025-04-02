@@ -78,6 +78,16 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         return $user;
     }
 
+
+    public function findOneByUser($user): ?Participant
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.nom = :participant')  // Assurez-vous que 'user' est bien le champ dans l'entité Participant
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();  // Renvoie un seul résultat ou null
+    }
+
     /**
      * Tells Symfony to use this provider for this User class.
      */
