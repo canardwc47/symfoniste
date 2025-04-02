@@ -6,17 +6,13 @@ use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\Sortie;
-
 use App\Form\AnnulationType;
-
 use App\Form\LieuType;
 use App\Form\Models\Recherche;
 use App\Form\RechercheType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
-
 use App\Repository\ParticipantRepository;
-
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
 use App\Service\SortieService;
@@ -31,8 +27,6 @@ use function Symfony\Component\Clock\now;
 
 final class SortieController extends AbstractController
 {
-
-
     #[Route('/', name: 'sortie_liste', methods: ['GET', 'POST'])]
     public function liste(
         SortieRepository $sortieRepository,
@@ -54,8 +48,6 @@ final class SortieController extends AbstractController
             'rechercheForm' => $rechercheForm->createView()
         ]);
     }
-
-
 
     #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function inscrire(
@@ -91,7 +83,6 @@ final class SortieController extends AbstractController
         return $this->redirectToRoute('sortie_liste');
     }
 
-
     #[Route('/sortie/{id}/detail', name: 'sortie_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, SortieRepository $sortieRepository): Response
         /*public function detail(Sortie $sortie, SortieRepository $sortieRepository): Response*/
@@ -117,7 +108,6 @@ final class SortieController extends AbstractController
         $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
         $sortie->setEtat($etat);
         $sortie->setSite($sortie->getOrganisateur()->getSite());
-
 
         //Création du formulaire SORTIE et association de l'entité vide.
         $sortieForm = $this->createForm(SortieType::class, $sortie);

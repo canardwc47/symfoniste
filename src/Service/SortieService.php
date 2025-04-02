@@ -14,7 +14,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class SortieService
 {
-
     private datetime $dateLimiteInscription;
     private SortieController $sortieController;
 
@@ -29,7 +28,6 @@ class SortieService
         EntityManagerInterface $em
         ) : String
     {
-
         // Conditions à remplir, message d'erreur ciblé suivant la condition non remplie
         $user = $security->getUser();
         if (!$user) {
@@ -107,7 +105,6 @@ class SortieService
             $em->persist($sortie);
             $em->flush();
     }
-
 
     // Mise à jour des sorties en fonction de la date et/ou du nombre de participants,
     public function majSorties (
