@@ -18,24 +18,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/participant', name: 'participant_')]
 final class ParticipantController extends AbstractController
-{
-    #[Route(name: 'index', methods: ['GET'])]
-    public function index(ParticipantRepository $participantRepository): Response
-    {
-        return $this->render('participant/index.html.twig', [
-            'participants' => $participantRepository->findAll(),
-        ]);
-    }
 
-
-
-
-    #[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
-    public function add(Request                $request,
+{#[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
+    public function add(Request $request,
                         EntityManagerInterface $entityManager,
-                        FileUploader $fileUploader,
+                        FileUploader $fileUploader, // Injection du service FileUploader
                         UserPasswordHasherInterface $userPasswordHasher
-
     ): Response
     {
         $participant = new Participant();
@@ -43,35 +31,31 @@ final class ParticipantController extends AbstractController
         $participantForm->handleRequest($request);
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
-
-            //traitement de l'image
             /** @var UploadedFile $imageFile */
 
-            $imageFile = $participantForm->get('image')->getData();
-            if($imageFile){
-                $participant->setFilename($fileUploader ->upload($imageFile));
+            if ($participantForm->get('images')->getData()) {
+                $imageFile = $participantForm->get('images')->getData();
+
+                $fileName = $fileUploader->upload($imageFile, $this->getUser()->getPseudo(),$this->getParameter('images_participant_directory'));
+                $this->getUser()->setFilename($fileName);
             }
 
             $plainPassword = $participant->getMdp();
             $hashedPassword = $userPasswordHasher->hashPassword($participant, $plainPassword);
-
             $participant->setMdp($hashedPassword);
 
             $entityManager->persist($participant);
             $entityManager->flush();
 
-            return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('participant_detail', ['id' => $participant->getId()]);
         }
 
         return $this->render('participant/ajouter.html.twig', [
-            'participant' => $participant,
-            'form' =>  $participantForm,
-            'app_image_participant_directory' => $this->getParameter('app.images_participant_directory'),
-
+            'participants' => $participant,
+            'form' => $participantForm,
+            'app_image_participant_directory' => $this->getParameter('images_participant_directory'),
         ]);
     }
-
-
 
     #[Route('/detail/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function detail(Participant $participant): Response
@@ -81,44 +65,56 @@ final class ParticipantController extends AbstractController
         ]);
     }
 
-
-
     #[Route('/update/{id}', name: 'update', methods: ['GET', 'POST'])]
     public function edit(Request $request,
                          Participant $participant,
                          EntityManagerInterface $entityManager,
                          FileUploader $fileUploader
     ): Response
-
     {
         $participantForm = $this->createForm(ParticipantType::class, $participant);
         $participantForm->handleRequest($request);
 
+        // Vérifier si le formulaire a été soumis et est valide
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
+            // Gérer l'image si nécessaire
+            $imageFile = $participantForm->get('images')->getData();
 
-            $imageFile = $participantForm->get('image')->getData();
-            if(($participantForm->has('deleteImage') && $participantForm['deleteImage']->getData()) || $imageFile) {
-                $fileUploader->delete($participant->getFilename(), $this->getParameter('app.images_participant_directory'));
-                if ($imageFile) {
-                    $participant->setFilename($fileUploader->upload($imageFile));
+            // Check if the image should be deleted or a new one is uploaded
+            if (($participantForm->has('deleteImage') && $participantForm['deleteImage']->getData()) || $imageFile) {
+                // Check if a filename exists before trying to delete
+                $filename = $participant->getFilename();
+                if ($filename) {
+                    // Supprimer l'ancienne image
+                    $fileUploader->delete($filename, $this->getParameter('images_participant_directory'));
+                } else {
+
                 }
-                else{
-                    $participant->setFilename(null);
+                // Si un fichier est téléchargé, l'ajouter
+                if ($imageFile) {
+                    $fileName = $fileUploader->upload(
+                            $imageFile,
+                            $this->getUser()->getPseudo(),
+                            $this->getParameter('images_participant_directory')
+                        );
+                    $this->getUser()->setFilename($fileName);
                 }
             }
+
+
+            // Persister les changements dans la base de données
             $entityManager->flush();
 
-            return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
+            // Rediriger vers la page des détails ou index après modification
+            return $this->redirectToRoute('participant_detail', ['id' => $participant->getId()]);
         }
 
+        // Affichage du formulaire pour modifier le participant
         return $this->render('participant/modifier.html.twig', [
-            'participant' => $participant,
+            'participants' => $participant,
             'form' => $participantForm,
         ]);
     }
-
-
-
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Participant $participant, EntityManagerInterface $entityManager): Response
@@ -128,6 +124,6 @@ final class ParticipantController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('participant_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('/', [], Response::HTTP_SEE_OTHER);
     }
 }
