@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block body %}
+    <div class="container text-center mt-5">
+        <h1 class="display-4 text-warning">🚧 503 - Service indisponible !</h1>
+        <p class="lead mt-3">Nous sommes en maintenance, nous revenons aussi vite que possible ! 😊</p>
+        <a href="{{ path('sortie_liste') }}" class="btn btn-primary mt-4">
+            <i class="bi bi-house-door"></i> Retour à l'accueil
+        </a>
+    </div>
+{% endblock %}
