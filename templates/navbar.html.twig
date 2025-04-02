@@ -1,5 +1,5 @@
-<header>
-    <nav class="navbar navbar-expand-lg border-bottom shadow-sm fixed-top">
+<div class="nav">
+    <nav class="navbar navbar-expand-lg border-bottom shadow-sm">
         <div class="container-fluid">
             <img src="{{ asset('image/logo.PNG') }}" alt="Logo" width="150" height="70" class="d-inline-block align-text-top">
 
@@ -13,87 +13,60 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_liste') }}" title="Accueil">Accueil</a>
+                        <a class="nav-link" href="{{ path('sortie_liste') }}"
+                           title="Accueil">Accueil</a>
                     </li>
 
                     {% if app.user %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('sortie_liste') }}" title="Villes">Villes</a>
+                        {% if is_granted("ROLE_ADMIN") %}
+                            <li class="nav-item">
+                            <a class="nav-link" href="{{ path('sortie_liste') }}"
+                               title="Villes">Villes</a>
+                        {% endif %}
                         </li>
-                {% if app.user %}
-                {% if is_granted("ROLE_ADMIN") %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_liste') }}"
-                           title="Villes">Villes</a>
-                {% endif %}
-                    </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('lieu_index') }}" title="Lieux">Lieux</a>
+                            <a class="nav-link" href="{{ path('lieu_index') }}"
+                               title="Lieux">Lieux</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('sortie_creer') }}" title="Create">Créer une sortie</a>
+                            <a class="nav-link" href="{{ path('sortie_creer') }}"
+                               title="Create">Créer une sortie</a>
                         </li>
 
                         <li class="nav-item">
                             {% if is_granted("ROLE_ADMIN") %}
-                                <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                                <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
                             {% endif %}
-                            <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
                         </li>
-                    <li class="nav-item">
-                    {% if is_granted("ROLE_ADMIN") %}
-                        <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
-                    {% endif %}
-                    </li>
+
+                        {% if is_granted("ROLE_ADMIN") %}
+                            <li class="nav-item">
+                            <a class="nav-link" href="{{ path('sortie_liste') }}"
+                               title="Sites">Sites</a>
+                        {% endif %}
+                        </li>
 
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
                         </li>
-                    {% if is_granted("ROLE_ADMIN") %}
-                        <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_liste') }}"
-                           title="Sites">Sites</a>
-                    {% endif %}
-                    </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_logout') }}" title="Sign out">Sign out</a>
+                            <a class="nav-link" href="{{ path('app_logout') }}"
+                               title="Sign out">Se déconnecter</a>
                         </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
-                    </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('sortie_liste') }}" title="Sites">Admin : Sites</a>
-                        </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_logout') }}"
-                           title="Sign out">Se déconnecter</a>
-                    </li>
 
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_login') }}" title="Sign in">Se connecter</a>
+                            <a class="nav-link" href="{{ path('app_login') }}"
+                               title="Sign in">Se connecter</a>
                         </li>
-
                     {% endif %}
+
                 </ul>
             </div>
         </div>
     </nav>
-</header>
-
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}"
-                           title="Sign in">Se connecter</a>
-                    </li>
-                {% endif %}
-
-            </ul>
-        </div>
-    </div>
-</nav>
 </div>
