@@ -47,10 +47,7 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
     /**
      * @deprecated since Symfony 5.3, loadUserByIdentifier() is used instead
      */
-    public function loadUserByUsername($username): UserInterface
-    {
-        return $this->loadUserByIdentifier($username);
-    }
+
 
     /**
      * Refreshes the user after being reloaded from the session.
