@@ -48,7 +48,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     // Ajouter la propriété roles
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $roles = 'ROLE_USER';  // Valeur par défaut
+    private array $roles = [];  // Valeur par défaut
 
     /**
      * @var Collection<int, Sortie>
@@ -235,16 +235,14 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        // La propriété $roles doit être convertie en tableau,
-        // s'il y a plusieurs rôles, tu peux les séparer par des virgules et les convertir en tableau
-        $roles = explode(',', $this->roles); // Assurez-vous que c'est un tableau
-        $roles[] = 'ROLE_USER'; // Assurez-vous que ROLE_USER est toujours présent
-        return array_unique($roles); // Évite les doublons
+        $roles =  $this->roles;
+        //$roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
     {
-        $this->roles = implode(',', $roles); // Convertit les rôles en une chaîne
+        $this->roles = $roles; // Convertit les rôles en une chaîne
         return $this;
     }
 
