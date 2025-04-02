@@ -29,33 +29,36 @@ class RechercheType extends AbstractType
                 'label' => 'Date de la sortie',
                 'widget' => 'single_text',
             ])
+            ->add('dateFin', DateType::class, [  // ➜ AJOUT DE DATE FIN
+                'required' => false,
+                'label' => 'Date de fin',
+                'widget' => 'single_text',
+            ])
             ->add('organisateur', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Sorties dont je suis l\'organisateur',
-                'mapped' => false,
             ])
-            ->add('participants', CheckboxType::class, [
+            ->add('participant', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Sorties auxquelles je suis inscrit',
-                'mapped' => false,
 
             ])
-            ->add('nonParticipants', CheckboxType::class, [
+            ->add('nonParticipant', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Sorties auxquelles je ne suis pas inscrit',
-                'mapped' => false,
+
             ])
-            ->add('sorties', CheckboxType::class, [
+            ->add('sortiesPassees', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Sorties passées',
-                'mapped' => false,
+
             ])
-            ->add('lieu', EntityType::class, [
-                'class' => Lieu::class,
+            ->add('site', EntityType::class, [
+                'class' => Site::class,
                 'required' => false,
-                'choice_label' => 'nomLieu',
+                'choice_label' => 'nomSite',
                 'placeholder' => 'Tous les lieux',
-                'mapped' => false,
+
 
             ])
             ->add('search', SubmitType::class, [

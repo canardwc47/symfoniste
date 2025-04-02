@@ -43,11 +43,11 @@ final class SortieController extends AbstractController
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
         $rechercheForm->handleRequest($request);
 
-        if ($rechercheForm->isSubmitted() ) {
+       // if ($rechercheForm->isSubmitted() ) {
             $sorties = $sortieRepository->rechercheSortie($recherche, $security);
-        } else {
-            $sorties = $sortieRepository->findAll();
-        }
+//        } else {
+//            $sorties = $sortieRepository->findAll();
+//        }
 
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
