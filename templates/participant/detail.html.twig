@@ -54,14 +54,15 @@
     </thead>
     <tbody>
     {% for detailSortie in detailSorties %}
-    <tr>
-    <td>{{ detailSortie.sortie_date.format('d/m/Y à H:i') }} </td>
-    <td>{{ detailSortie.sortie_nom }}</td>
-    <td>{{ detailSortie.sortie_organisateur }}</td>
-    <td>{{ detailSortie.ville_nom }}</td>
-    <td>{{ detailSortie.lieu_nom }}</td>
-    <td>{{ detailSortie.etat_libelle }}</td>
-    </tr>
+        <tr>
+            <td>{{ detailSortie.sortie_date.format('d/m/Y à H:i') }} </td>
+            <td>{{ detailSortie.sortie_nom }}</td>
+            <td>{{ detailSortie.sortie_organisateur }}</td>
+            <td>{{ detailSortie.sortie_site }}</td>
+            <td>{{ detailSortie.ville_nom }}</td>
+            <td>{{ detailSortie.lieu_nom }}</td>
+            <td>{{ detailSortie.etat_libelle }}</td>
+        </tr>
 
     {% endfor %}
     </tbody>
