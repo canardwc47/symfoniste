@@ -205,14 +205,12 @@ final class SortieController extends AbstractController
     #[Route('/sortie/{id}/annulation', name: 'sortie_annulation', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function annulation(
         int $id,
-        SiteRepository $siteRepository,
         SortieRepository $sortieRepository,
         EtatRepository $etatRepository,
         Request $request,
         EntityManagerInterface $em) : Response {
 
         $sortie = $sortieRepository ->find($id);
-        $site = $siteRepository ->find($sortie->getSite()->getId());
 
         $etatAnnule = $etatRepository-> findBy(['libelle'=> 'Annulée']);
 
@@ -220,17 +218,22 @@ final class SortieController extends AbstractController
         $annulationForm->handleRequest($request);
 
         if ($annulationForm->isSubmitted() && $annulationForm->isValid()) {
+            $currentDate = new \DateTimeImmutable();
+            if ($sortie->getDateHeureDebut() < $currentDate) {
+                $this->addFlash('warning', 'Ta sortie est déjà passée !');
+                return $this->redirectToRoute('sortie_liste');
+            }
 
             $sortie ->setEtat($etatAnnule[0]);
             $em->persist($sortie);
             $em->flush();
             $this->addFlash('success', 'Ta sortie a bien été annulée !');
 
-            return $this->redirectToRoute('sortie_liste', ['id' => $sortie->getId(), 'siteId'=> $site->getId()]);
+            return $this->redirectToRoute('sortie_liste');
 
         }
 
-        return $this->render('sortie/annulation.html.twig' , ["annulationForm"=> $annulationForm, 'siteId'=> $site->getId(), 'sortie'=> $sortie ]);
+        return $this->render('sortie/annulation.html.twig' , ["annulationForm"=> $annulationForm, 'sortie'=> $sortie ]);
     }
 
 }

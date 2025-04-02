@@ -17,15 +17,19 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
 
         $ville = $manager->getRepository(Ville::class)->findAll();
 
-        $prefix = ["Au", "The", "El", "My", "Du", "", "", "Das", "One", "Ein"];
+        $prefix = ["Au", "The", "El", "My", "Das", "One", "Ein", "Our", "Nuestro", "Notre", "Mein"];
         $adjectives = ["Nocturne", "Gemütlich","Rustikal", "Secret", "Abgefahren","Cosmique", "Rouge", "Noir", "Bleu", "Doré", "Fou", "Secret", "Sexy", "Famoso", "Caliente", "Dancing", "Special", "Chill", "Crazy"];
         $nouns = ["Lounge", "Palace", "Spot", "Temple", "Fusion", "Vortex", "Dynamite", "Cocktail", "Bistrot", "Cave", "Piano", "Brasserie", "Canaille", "Loutre", "Bar", "Mondschein", "Versteck", "Gasthaus", "Rooftop", "Kantine"];
 
 
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 40; $i++) {
             $lieu = new Lieu();
-            $fakename = $prefix[array_rand($prefix)] . " " . $adjectives[array_rand($adjectives)] . " " . $nouns[array_rand($nouns)];
+            if (rand(0, 1) === 0) {
+                $fakename = $prefix[array_rand($prefix)] . " " . $adjectives[array_rand($adjectives)] . " " . $nouns[array_rand($nouns)];
+            } else {
+                $fakename = $prefix[array_rand($prefix)] . " " . $nouns[array_rand($nouns)] . " " . $adjectives[array_rand($adjectives)];
+            }
             $lieu->setNomLieu($fakename);
             $lieu->setRue($faker->streetName);
             $lieu->setLatitude($faker->randomFloat(6, 46.5, 50.0));
