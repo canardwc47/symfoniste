@@ -57,67 +57,73 @@
                 </thead>
                 <tbody>
                 {% for sortie in sorties %}
-                    <tr class="sortie"
-                        data-id="{{ sortie.id }}"
-                        data-inscrit="{% if sortie.participants.contains(app.user) %}1{% else %}0{% endif %}"
-                        data-non-inscrit="{% if sortie.participants.contains(app.user) %}0{% else %}1{% endif %}"
-                        data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
+                    {% if sorties %}
+                        {% if sortie.etat.libelle != 'Créée' or (sortie.etat.libelle == 'Créée' and sortie.organisateur == app.user) %}
+                            <tr class="sortie"
+                                data-id="{{ sortie.id }}"
+                                data-inscrit="{% if sortie.participants.contains(app.user) %}1{% else %}0{% endif %}"
+                                data-non-inscrit="{% if sortie.participants.contains(app.user) %}0{% else %}1{% endif %}"
+                                data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
 
-                        <td>{{ sortie.nomSortie }} ({{ sortie.id }})</td>
-                        <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
-                        <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
-                        <td><span class="badge bg-primary">{{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
+                                <td>{{ sortie.nomSortie }} ({{ sortie.id }})</td>
+                                <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
+                                <td>{{ sortie.dateLimiteInscription.format('d/m/Y') }}</td>
+                                <td><span class="badge bg-primary">{{ sortie.participants.count() }} </span> / {{ sortie.nbInscriptionsMax }} </td>
 
-                        <td>
-                            {% if sortie.etat.libelle == 'Créée' %}
-                                <span class="badge bg-warning text-white">{{ sortie.etat.libelle }}</span>
-                            {% elseif sortie.etat.libelle == 'Ouverte' %}
-                                <span class="badge bg-info text-white">{{ sortie.etat.libelle }}</span>
-                            {% elseif sortie.etat.libelle == 'Clôturée' %}
-                                <span class="badge bg-danger text-white">{{ sortie.etat.libelle }}</span>
-                            {% else %}
-                                <span class="badge bg-secondary text-grey">{{ sortie.etat.libelle }}</span>
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            {% if sortie.participants.contains(app.user) %}
-                                <span class="badge bg-success">Oui</span>
-
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            <a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
-                                {{ sortie.organisateur.pseudo }}
-                            </a>
-                        </td>
-
-                        <td>
-                            <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-primary">Afficher</a>
-
-                            {% if app.user %}
-                                {% if sortie.etat.libelle == 'Ouverte' %}
-                                    {% if sortie.participants.contains(app.user) %}
-                                        <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-desister" data-sortie-id="{{ sortie.id }}">Se désister</a>
+                                <td>
+                                    {% if sortie.etat.libelle == 'Créée' %}
+                                        <span class="badge bg-warning text-white">{{ sortie.etat.libelle }}</span>
+                                    {% elseif sortie.etat.libelle == 'Ouverte' %}
+                                        <span class="badge bg-info text-white">{{ sortie.etat.libelle }}</span>
+                                    {% elseif sortie.etat.libelle == 'Clôturée' %}
+                                        <span class="badge bg-danger text-white">{{ sortie.etat.libelle }}</span>
                                     {% else %}
-                                        <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-inscrire" data-sortie-id="{{ sortie.id }}">S'inscrire</a>
+                                        <span class="badge bg-secondary text-grey">{{ sortie.etat.libelle }}</span>
                                     {% endif %}
-                                {% endif %}
+                                </td>
 
-                                {% if sortie.organisateur == app.user %}
-                                    {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
-                                        <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Modifier</a>
-                                        <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-danger">Annuler</a>
+                                <td>
+                                    {% if sortie.participants.contains(app.user) %}
+                                        <span class="badge bg-success">Oui</span>
+
                                     {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
-                    </tr>
+                                </td>
+
+                                <td>
+                                    <a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': sortie.organisateur.id}) }}">
+                                        {{ sortie.organisateur.pseudo }}
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-primary">Afficher</a>
+
+                                    {% if app.user %}
+                                        {% if sortie.etat.libelle in ['Ouverte', 'Clôturée'] and (sortie.etat.libelle != 'Clôturée' or sortie.participants.contains(app.user)) %}
+                                            {% if sortie.participants.contains(app.user) %}
+                                                <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-desister" data-sortie-id="{{ sortie.id }}">Se désister</a>
+                                            {% else %}
+                                                <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-inscrire" data-sortie-id="{{ sortie.id }}">S'inscrire</a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if sortie.organisateur == app.user %}
+                                            {% if sortie.etat.libelle in ['Ouverte', 'Créée'] %}
+                                                <a href="{{ path('sortie_update', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success">Modifier</a>
+                                                <a href="{{ path('sortie_annulation', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-danger">Annuler</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">Pas de sortie dans la base de données</td>
+                        </tr>
+                    {% endif %}
+
                 {% endfor %}
                 </tbody>
             </table>

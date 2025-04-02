@@ -12,6 +12,7 @@ use App\Form\Models\Recherche;
 use App\Form\RechercheType;
 use App\Form\SortieType;
 use App\Repository\EtatRepository;
+use App\Repository\LieuRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SiteRepository;
 use App\Repository\SortieRepository;
@@ -30,9 +31,12 @@ final class SortieController extends AbstractController
     #[Route('/', name: 'sortie_liste', methods: ['GET', 'POST'])]
     public function liste(
         SortieRepository $sortieRepository,
+        EntityManagerInterface $em,
         Request $request,
-        Security $security
+        Security $security,
+        SortieService $sortieService,
     ): Response {
+
         $recherche = new Recherche();
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
         $rechercheForm->handleRequest($request);
@@ -53,13 +57,14 @@ final class SortieController extends AbstractController
     public function inscrire(
         int                    $id,
         SortieService          $sortieService,
-        Security               $security,
         EntityManagerInterface $em
     ): Response
     {
         $result = $sortieService->inscription($id);
         if ($result === "Inscription réussie.") {
             $this->addFlash('success', $result);
+            $sortieService->majSorties();
+            $em->clear();
         } else {
             $this->addFlash('warning', $result);
         }
@@ -70,16 +75,18 @@ final class SortieController extends AbstractController
     public function desister(
         int                    $id,
         SortieService          $sortieService,
-        Security               $security,
         EntityManagerInterface $em
     ): Response
     {
-        $result = $sortieService->desistement($id, $security, $em);
+        $result = $sortieService->desistement($id);
         if ($result === "Désistement enregistré.") {
             $this->addFlash('success', $result);
+            $sortieService->majSorties();
+            $em->clear();
         } else {
             $this->addFlash('warning', $result);
         }
+
         return $this->redirectToRoute('sortie_liste');
     }
 
@@ -89,6 +96,7 @@ final class SortieController extends AbstractController
     {
         //Récupère la sortie en fonction de l'id présent dans l'url
         $sortie = $sortieRepository->find($id);
+
         if (!$sortie) {
             throw $this->createNotFoundException('Cette sortie n\'existe pas désolé!');
         }
@@ -156,13 +164,13 @@ final class SortieController extends AbstractController
         int                    $id,
         SortieRepository       $sortieRepository,
         SortieService          $sortieService,
-        EntityManagerInterface $em): Response
+        ): Response
     {
         $sortie = $sortieRepository->find($id);
         if (!$sortie) {
             throw $this->createNotFoundException('Sortie non trouvée');
         }
-        $sortieService->publierSortie($sortie, $em);
+        $sortieService->publierSortie($sortie);
 
         $this->addFlash('success', 'Ta sortie a été publiée avec succès!');
         return $this->redirectToRoute('sortie_liste');
@@ -204,7 +212,6 @@ final class SortieController extends AbstractController
 
     #[Route('/sortie/{id}/annulation', name: 'sortie_annulation', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function annulation(
-
         int                    $id,
         SiteRepository         $siteRepository,
         SortieRepository       $sortieRepository,
@@ -218,8 +225,6 @@ final class SortieController extends AbstractController
 
         $etatAnnule = $etatRepository->findBy(['libelle' => 'Annulée']);
 
-
-
         $annulationForm = $this->createForm(AnnulationType::class, $sortie);
         $annulationForm->handleRequest($request);
 
@@ -229,15 +234,18 @@ final class SortieController extends AbstractController
                 $this->addFlash('warning', 'Ta sortie est déjà passée !');
                 return $this->redirectToRoute('sortie_liste');
             }
-
             $sortie->setEtat($etatAnnule[0]);
             $em->persist($sortie);
             $em->flush();
+
+            //Message d'alerte pour chaque participant
+            foreach ($sortie->getParticipants() as $participant) {
+                $this->addFlash('info', 'La sortie ' . $sortie->getNomSortie() . ' a été annulée. Désolé pour le dérangement, ' . $participant->getPseudo() . '.');
+            }
+
+            //Message de confirmation pour l'organisateur lorsqu'il est redirigé vers la liste des sorties
             $this->addFlash('success', 'Ta sortie a bien été annulée !');
-
-
             return $this->redirectToRoute('sortie_liste', ['id' => $sortie->getId(), 'siteId' => $site->getId()]);
-
         }
 
         return $this->render('sortie/annulation.html.twig', ["annulationForm" => $annulationForm, 'siteId' => $site->getId(), 'sortie' => $sortie]);
