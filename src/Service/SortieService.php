@@ -6,6 +6,7 @@ use App\Controller\SortieController;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Repository\EtatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use DateTime;
@@ -14,29 +15,35 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class SortieService
 {
-
     private datetime $dateLimiteInscription;
     private SortieController $sortieController;
 
-    public function __construct(SortieRepository $sortieRepository)
+    public function __construct(
+        Security $security,
+        SortieRepository $sortieRepository,
+        ParticipantRepository $participantRepository,
+        EtatRepository $etatRepository,
+        EntityManagerInterface $em)
     {
+        $this->security = $security;
         $this->sortieRepository = $sortieRepository;
+        $this->participantRepository = $participantRepository;
+        $this->etatRepository = $etatRepository;
+        $this->em = $em;
     }
 
     public function inscription(
         int $id,
-        Security $security,
-        EntityManagerInterface $em
-        ) : String
+       ) : String
     {
-
         // Conditions à remplir, message d'erreur ciblé suivant la condition non remplie
-        $user = $security->getUser();
+        $user = $this->security->getUser();
         if (!$user) {
             return "Utilisateur non connecté.";
         }
-        $participant = $em->getRepository(Participant::class)->findOneBy(['id' => $user]);
-        $sortie = $em->getRepository(Sortie::class)->find($id);
+
+        $participant = $this->participantRepository->find($user->getId());
+        $sortie = $this->sortieRepository->find($id);
 
         if (!$participant || !$sortie) {
             return "Sortie ou participant introuvable.";
@@ -48,32 +55,31 @@ class SortieService
         if ($sortie->getDateLimiteInscription() < $currentDate) {
             return "La date limite d'inscription est dépassée.";
         }
-        if (count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax()) {
+        if ($sortie->getParticipants()->count() >= $sortie->getNbInscriptionsMax()) {
             return "Le nombre maximum de participants est atteint.";
         }
         if ($sortie->getParticipants()->contains($participant)) {
             return "Vous êtes déjà inscrit(e) à cette sortie.";
         }
         $sortie->addParticipant($participant);
-        $em->persist($sortie);
-        $em->flush();
+        $this->em->persist($sortie);
+        $this->em->flush();
         return "Inscription réussie.";
     }
 
     public function desistement(
         int $id,
-        Security $security,
-        EntityManagerInterface $em
     ) : String
     {
-
         // Conditions à remplir, message d'erreur ciblé suivant la condition non remplie
-        $user = $security->getUser();
+        $user = $this->security->getUser();
         if (!$user) {
             return "Utilisateur non connecté.";
         }
-        $participant = $em->getRepository(Participant::class)->findOneBy(['id' => $user]);
-        $sortie = $em->getRepository(Sortie::class)->find($id);
+
+        $participant = $this->participantRepository->find($user->getId());
+        $sortie = $this->sortieRepository->find($id);
+
         if (!$participant || !$sortie) {
             return "Sortie ou participant introuvable.";
         }
@@ -90,8 +96,8 @@ class SortieService
         $etat = $sortie->getEtat()->getLibelle();
         if ($etat === 'Ouverte' || $etat === 'Clôturée') {
             $sortie->removeParticipant($participant);
-            $em->persist($sortie);
-            $em->flush();
+            $this->em->persist($sortie);
+            $this->em->flush();
             return "Désistement enregistré.";
         }
         return "Action impossible.";
@@ -99,58 +105,55 @@ class SortieService
 
     public function publierSortie(
         Sortie $sortie,
-        EntityManagerInterface $em
         ) : void
     {
-            $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+            $em = $this->em;
+            $etat = $this->etatRepository->findOneBy(['libelle' => 'Ouverte']);
             $sortie->setEtat($etat);
             $em->persist($sortie);
             $em->flush();
     }
 
-
     // Mise à jour des sorties en fonction de la date et/ou du nombre de participants,
-    public function majSorties (
-        EntityManagerInterface $em
-) : array
+    public function majSorties () : void
     {
+        $em = $this->em;
+        $etatRepository = $this->etatRepository;
         $currentDate = new \DateTimeImmutable();
-        $sorties = $em->getRepository(Sortie::class) ->findAll();
-        $updatedSorties = [];
+        $sorties = $this->sortieRepository->findAll();
 
         foreach ($sorties as $sortie) {
             $etatOrig = $sortie->getEtat()->getLibelle();
             if (
                 ($sortie->getDateLimiteInscription() >= $currentDate && count($sortie->getParticipants())<=$sortie->getNbInscriptionsMax())
                 && $etatOrig == 'Clôturée' ) {
-                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+                $etat = $etatRepository->findOneBy(['libelle' => 'Ouverte']);
                 $sortie->setEtat($etat);
             }
-            if (($sortie->getDateLimiteInscription() <= $currentDate ||count($sortie->getParticipants())>=$sortie->getNbInscriptionsMax())
+            if (($sortie->getDateLimiteInscription() <= $currentDate || count($sortie->getParticipants())>=$sortie->getNbInscriptionsMax())
                 && $etatOrig == 'Ouverte' ) {
-                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Clôturée']);
+                $etat = $etatRepository->findOneBy(['libelle' => 'Clôturée']);
                 $sortie->setEtat($etat);
             }
             if ($sortie->getDateHeureDebut() <= $currentDate && $etatOrig == 'Clôturée' ) {
-                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Activité en cours']);
+                $etat = $etatRepository->findOneBy(['libelle' => 'Activité en cours']);
                 $sortie->setEtat($etat);
             }
             $dateDebutPlusUnJour = $sortie->getDateHeureDebut()->modify('+1 day');
             if ($dateDebutPlusUnJour <= $currentDate && $etatOrig == 'Activité en cours' ) {
-                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Passée']);
+                $etat = $etatRepository->findOneBy(['libelle' => 'Passée']);
                 $sortie->setEtat($etat);
             }
 
             $dateDebutPlusUnMois = $sortie->getDateHeureDebut()->modify('+1 month');
             if ($dateDebutPlusUnMois <= $currentDate && ($etatOrig == 'Passée' || $etatOrig == 'Annulée'))  {
-                $etat = $em->getRepository(Etat::class)->findOneBy(['libelle' => 'Archivée']);
+                $etat = $etatRepository->findOneBy(['libelle' => 'Archivée']);
                 $sortie->setEtat($etat);
             }
             $em->persist($sortie);
-            $updatedSorties[] = $sortie;
+
         }
         $em->flush();
-        return $updatedSorties;
 
     }
 

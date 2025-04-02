@@ -31,13 +31,14 @@ class SortieRepository extends ServiceEntityRepository
         Recherche $recherche,
         Security  $security)
     {
-
-
         $qB = $this->createQueryBuilder('s')
             ->leftJoin('s.lieu', 'lieu')->addSelect('lieu')
             ->leftJoin('s.participants', 'p')->addSelect('p')
             ->leftJoin('s.organisateur', 'o')->addSelect('o')
             ->leftJoin('s.etat', 'e')->addSelect('e')
+            ->where('e.libelle != :etat')
+            ->setParameter('etat', 'Archivée')
+            ->orderBy('s.dateHeureDebut', 'DESC')
             ->leftJoin('s.site', 'site')->addSelect('site');
             //->select('s')
 //            ->distinct();
@@ -93,12 +94,6 @@ class SortieRepository extends ServiceEntityRepository
         $qB->andWhere('site.id = :siteId')
             ->setParameter('siteId', $recherche->getSite()->getId());
     }
-
-
-
-
-
-
 
         return $qB->
         getQuery()

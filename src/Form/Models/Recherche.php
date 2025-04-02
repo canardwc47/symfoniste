@@ -115,8 +115,4 @@ class Recherche
         $this->participant = $participant;
     }
 
-
-
-
-
 }

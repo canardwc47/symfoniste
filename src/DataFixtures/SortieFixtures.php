@@ -28,7 +28,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         $etat = $manager->getRepository(Etat::class)->findAll();
         $participants = $manager->getRepository(Participant::class)->findAll();
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 40; $i++) {
             $sortie = new Sortie();
             $sortie->setNomSortie($faker->sentence(2));
             $sortie->setEtat($faker->randomElement($etat));
