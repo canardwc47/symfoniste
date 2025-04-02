@@ -229,12 +229,18 @@ a {
     width: 45%;
     margin: 0;
     border-collapse: collapse;
-    justify-content: center;
+    /*justify-content: center;
     align-items: center;
-    justify-items: center;
+    justify-items: center;*/
 }
-
-.table-profil th, .profil-main .table-profil td {
+.profil-main {
+    display: flex;
+    justify-content: center;  /* Centrer la table horizontalement */
+    align-items: center;      /* Centrer la table verticalement */
+    width: 100%;              /* Prendre toute la largeur */
+    margin-top: 20px;         /* Un peu d'espace au-dessus */
+}
+.table-profil th,  .table-profil td {
     padding: 12px 16px;
     text-align: center;
     vertical-align: middle;
