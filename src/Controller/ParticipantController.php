@@ -9,18 +9,22 @@ use App\Service\FileUploader;
 use App\Services\Uploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 #[Route('/participant', name: 'participant_')]
 final class ParticipantController extends AbstractController
 
-{#[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
-    public function add(Request $request,
+{
+    #[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function add(Request                $request,
                         EntityManagerInterface $entityManager,
                         FileUploader $fileUploader, // Injection du service FileUploader
                         UserPasswordHasherInterface $userPasswordHasher
@@ -29,6 +33,10 @@ final class ParticipantController extends AbstractController
         $participant = new Participant();
         $participantForm = $this->createForm(ParticipantType::class, $participant);
         $participantForm->handleRequest($request);
+
+/*        if (!$this->isGranted("ROLE_ADMIN")){
+            throw $this->createAccessDeniedException("Vous n'avez pas les droits pour créer un participant");
+        }*/
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
             /** @var UploadedFile $imageFile */
@@ -57,13 +65,30 @@ final class ParticipantController extends AbstractController
         ]);
     }
 
+
+
     #[Route('/detail/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function detail(Participant $participant): Response
+    public function detail(
+        Participant $participant,
+        Security $security,
+        EntityManagerInterface $em
+    ): Response
     {
+        if ($security->getUser()) {
+
+            $detailSorties = $em->getRepository(Participant::class)->detailSortiesParticipant($participant->getId());
+
         return $this->render('participant/detail.html.twig', [
+            'detailSorties' => $detailSorties,
             'participant' => $participant,
         ]);
+    } else {
+            return $this->redirectToRoute('app_login');
+        }
     }
+
+
+
 
     #[Route('/update/{id}', name: 'update', methods: ['GET', 'POST'])]
     public function edit(Request $request,
@@ -71,6 +96,7 @@ final class ParticipantController extends AbstractController
                          EntityManagerInterface $entityManager,
                          FileUploader $fileUploader
     ): Response
+
     {
         $participantForm = $this->createForm(ParticipantType::class, $participant);
         $participantForm->handleRequest($request);
@@ -115,6 +141,9 @@ final class ParticipantController extends AbstractController
             'form' => $participantForm,
         ]);
     }
+
+
+
 
     #[Route('/{id}', name: 'delete', methods: ['POST'])]
     public function delete(Request $request, Participant $participant, EntityManagerInterface $entityManager): Response

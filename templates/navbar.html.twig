@@ -16,25 +16,28 @@
 
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('sortie_liste') }}"
-                       title="Villes">Villes</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
-                       title="Sites">Sites</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('sortie_liste') }}"
                        title="Accueil">Accueil</a>
                 </li>
+
                 {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_liste') }}"
+                           title="Villes">Villes</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('lieu_index') }}"
+                           title="Lieux">Lieux</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_creer') }}"
                            title="Create">Créer une sortie</a>
                     </li>
 
                     <li class="nav-item">
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                    {% endif %}
                         <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
                     </li>
 
@@ -45,6 +48,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}"
                            title="Sign out">Sign out</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_liste') }}"
+                           title="Sites">Admin : Sites</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('participant_index') }}"
+                           title="Sites">Admin : Participants</a>
                     </li>
 
                 {% else %}

@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Participant;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -11,8 +13,11 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
-class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface
+class ParticipantRepository extends ServiceEntityRepository implements UserProviderInterface, PasswordUpgraderInterface, UserLoaderInterface
 {
 
     // Test constructeur pour vérifier si le formulaire marche
@@ -32,13 +37,11 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
      */
     public function loadUserByIdentifier($identifier): UserInterface
     {
-        $user = $this->findOneBy(['email' => $identifier]);
-
-        if (!$user) {
-            throw new UserNotFoundException(sprintf('User with email "%s" not found.', $identifier));
-        }
-
-        return $user;
+        return $this->createQueryBuilder('p')
+            ->where('p.email = :identifier OR p.pseudo = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
@@ -75,6 +78,16 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         return $user;
     }
 
+
+    public function findOneByUser($user): ?Participant
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.nom = :participant')  // Assurez-vous que 'user' est bien le champ dans l'entité Participant
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();  // Renvoie un seul résultat ou null
+    }
+
     /**
      * Tells Symfony to use this provider for this User class.
      */
@@ -92,4 +105,30 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         // 1. persist the new password in the user storage
         // 2. update the $user object with $user->setPassword($newHashedPassword);
     }
+
+    //Fonction pour retrouver plusieurs détails d'un participant
+    public function detailSortiesParticipant(int $participantId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select(
+                'p.id AS participant_id',
+                's.dateHeureDebut AS sortie_date',
+                's.nomSortie AS sortie_nom',
+                'o.pseudo AS sortie_organisateur',
+                'l.nomLieu AS lieu_nom',
+                'v.nom AS ville_nom',
+                'e.libelle AS etat_libelle'
+            )
+            ->join('p.sorties', 's')
+            ->join('s.organisateur', 'o')
+            ->join('s.etat', 'e')
+            ->join('s.lieu', 'l')
+            ->join('l.ville', 'v')
+            ->where('p.id = :participantId')
+            ->setParameter('participantId', $participantId)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }
