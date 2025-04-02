@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block body %}
+    <div class="container text-center mt-5">
+        <h1 class="display-4 text-warning">🚧 404 - Page not found !</h1>
+        <p class="lead mt-3">La page demandée n'a pas pu être trouvée.
+            Vérifier s'il y a une erreur d'orthographe dans l'URL 😊</p>
+        <a href="{{ path('sortie_liste') }}" class="btn btn-primary mt-4">
+            <i class="bi bi-house-door"></i> Retour à l'accueil
+        </a>
+    </div>
+{% endblock %}
