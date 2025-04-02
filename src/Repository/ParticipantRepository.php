@@ -111,7 +111,6 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
                 's.dateHeureDebut AS sortie_date',
                 's.nomSortie AS sortie_nom',
                 'o.pseudo AS sortie_organisateur',
-                //'o.site AS sortie_site',
                 'l.nomLieu AS lieu_nom',
                 'v.nom AS ville_nom',
                 'e.libelle AS etat_libelle'
