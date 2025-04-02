@@ -81,17 +81,22 @@ final class ParticipantController extends AbstractController
     public function detail(
         Participant $participant,
         Security $security,
-
+        EntityManagerInterface $em
     ): Response
     {
         if ($security->getUser()) {
+
+            $detailSorties = $em->getRepository(Participant::class)->detailSortiesParticipant($participant->getId());
+
         return $this->render('participant/detail.html.twig', [
+            'detailSorties' => $detailSorties,
             'participant' => $participant,
         ]);
     } else {
             return $this->redirectToRoute('app_login');
         }
     }
+
 
 
 

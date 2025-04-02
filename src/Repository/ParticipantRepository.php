@@ -96,4 +96,29 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         // 2. update the $user object with $user->setPassword($newHashedPassword);
     }
 
+    //Fonction pour retrouver plusieurs détails d'un participant
+    public function detailSortiesParticipant(int $participantId): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select(
+                'p.id AS participant_id',
+                's.dateHeureDebut AS sortie_date',
+                's.nomSortie AS sortie_nom',
+                'o.pseudo AS sortie_organisateur',
+                'l.nomLieu AS lieu_nom',
+                'v.nom AS ville_nom',
+                'e.libelle AS etat_libelle'
+            )
+            ->join('p.sorties', 's')
+            ->join('s.organisateur', 'o')
+            ->join('s.etat', 'e')
+            ->join('s.lieu', 'l')
+            ->join('l.ville', 'v')
+            ->where('p.id = :participantId')
+            ->setParameter('participantId', $participantId)
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }
