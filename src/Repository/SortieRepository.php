@@ -36,7 +36,6 @@ class SortieRepository extends ServiceEntityRepository
         $qB = $this->createQueryBuilder('s');
         $user = $security->getUser();
 
-
         $nomDeSortie = $recherche->getNom();
         $dateDeSortie = $recherche->getDateDebut();
         $now = new \DateTimeImmutable();
@@ -45,7 +44,6 @@ class SortieRepository extends ServiceEntityRepository
         $nonInscrit = $recherche->getNonParticipant();
         $sortiesPassees = $recherche->getDateDebut();
         $lieu = $recherche->getLieu();
-
 
 
         //Recherche par nom de Sortie
@@ -91,7 +89,7 @@ class SortieRepository extends ServiceEntityRepository
                 ->setParameter('lieu', $lieu);
         }
 
-//        dd($qB->getDQL());
+
 
         return $qB->addOrderBy('s.dateHeureDebut', 'DESC')->getQuery()->getResult();
     }
