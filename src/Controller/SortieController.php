@@ -40,7 +40,7 @@ final class SortieController extends AbstractController
         if ($rechercheForm->isSubmitted() ) {
             $sorties = $sortieRepository->rechercheSortie($recherche, $security);
         } else {
-            $sorties = $sortieRepository->findAll();
+            $sorties = $sortieRepository->afficherSorties();
         }
 
         return $this->render('sortie/liste.html.twig', [
@@ -57,7 +57,7 @@ final class SortieController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
-        $result = $sortieService->inscription($id, $security, $em);
+        $result = $sortieService->inscription($id);
         if ($result === "Inscription réussie.") {
             $this->addFlash('success', $result);
         } else {

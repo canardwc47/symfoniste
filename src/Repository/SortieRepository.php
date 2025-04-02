@@ -27,15 +27,37 @@ class SortieRepository extends ServiceEntityRepository
      * @return Sortie[] Returns an array of Sortie objects
      */
 
+    public function afficherSorties(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select(
+                's.id',
+                's.nomSortie',
+                's.dateHeureDebut',
+                's.duree',
+                's.dateLimiteInscription',
+                's.nbInscriptionsMax',
+                'p.id AS participant_id',
+                'o.pseudo AS organisateur_pseudo',
+                'e.libelle AS etat_libelle'
+            )
+            ->join('s.etat', 'e')
+            ->join('s.organisateur', 'o')
+            ->leftJoin('s.participants', 'p')
+            ->where('e.libelle != :etat')
+            ->setParameter('etat', 'Annulée')
+            ->orderBy('s.dateHeureDebut', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function rechercheSortie(
         Recherche $recherche,
-        Security  $security)
+        Security  $security) : array
     {
-
 
         $qB = $this->createQueryBuilder('s');
         $user = $security->getUser();
-
 
         $nomDeSortie = $recherche->getNom();
         $dateDeSortie = $recherche->getDateDebut();
@@ -45,8 +67,6 @@ class SortieRepository extends ServiceEntityRepository
         $nonInscrit = $recherche->getNonParticipant();
         $sortiesPassees = $recherche->getDateDebut();
         $lieu = $recherche->getLieu();
-
-
 
         //Recherche par nom de Sortie
         if ($nomDeSortie) {
@@ -60,7 +80,7 @@ class SortieRepository extends ServiceEntityRepository
         }
 
         //Recherche si je suis inscrit a la sortie
-        if ($inscrit) {
+        if ($user instanceof Participant) {
             $qB->andWhere(':participant MEMBER OF s.participants')
                 ->setParameter('participant', $user);
         }
@@ -78,21 +98,18 @@ class SortieRepository extends ServiceEntityRepository
 //                ->setParameter('dateDeSortie', $dateDeSortieString);
 //        }
 //
-//        // Recherche des sorties passées
-//        if ($sortiesPassees) {
-//            $now = new \DateTimeImmutable();
-//            $qB->andWhere('s.dateHeureDebut < :now')
-//                ->setParameter('now', $now);
-//        }
+        // Recherche des sorties passées
+        if ($sortiesPassees) {
+            $now = new \DateTimeImmutable();
+            $qB->andWhere('s.dateHeureDebut < :now')
+                ->setParameter('now', $now);
+        }
 
         //Recherche par lieu de sorties
         if ($lieu) {
             $qB->andWhere('s.lieu LIKE :lieu')
                 ->setParameter('lieu', $lieu);
         }
-
-//        dd($qB->getDQL());
-
         return $qB->addOrderBy('s.dateHeureDebut', 'DESC')->getQuery()->getResult();
     }
 

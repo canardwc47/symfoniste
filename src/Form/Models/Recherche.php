@@ -3,6 +3,7 @@
 namespace App\Form\Models;
 
 use App\Entity\Lieu;
+use App\Entity\Participant;
 use phpDocumentor\Reflection\Types\Boolean;
 
 class Recherche
@@ -13,7 +14,7 @@ class Recherche
 
     private ?string $lieu = null;
     private ?bool $organisateur = null;
-    private ?bool $participant = null;
+    private ?Participant $participant = null;
     private ?bool $nonParticipant = null;
 
     public function getNom(): ?string
@@ -66,7 +67,7 @@ class Recherche
         $this->organisateur = $organisateur;
     }
 
-    public function getParticipant(): ?bool
+    public function getParticipant(): ?Participant
     {
         return $this->participant;
     }
