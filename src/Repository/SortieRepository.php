@@ -30,22 +30,10 @@ class SortieRepository extends ServiceEntityRepository
     public function afficherSorties(): array
     {
         return $this->createQueryBuilder('s')
-            ->select(
-                's.id',
-                's.nomSortie',
-                's.dateHeureDebut',
-                's.duree',
-                's.dateLimiteInscription',
-                's.nbInscriptionsMax',
-                'p.id AS participant_id',
-                'o.pseudo AS organisateur_pseudo',
-                'e.libelle AS etat_libelle'
-            )
+            ->select('s')
             ->join('s.etat', 'e')
-            ->join('s.organisateur', 'o')
-            ->leftJoin('s.participants', 'p')
             ->where('e.libelle != :etat')
-            ->setParameter('etat', 'Annulée')
+            ->setParameter('etat', 'Archivée')
             ->orderBy('s.dateHeureDebut', 'DESC')
             ->getQuery()
             ->getResult();
@@ -56,7 +44,13 @@ class SortieRepository extends ServiceEntityRepository
         Security  $security) : array
     {
 
-        $qB = $this->createQueryBuilder('s');
+        $qB = $this->createQueryBuilder('s')
+            ->select('s')
+            ->join('s.etat', 'e')
+            ->where('e.libelle != :etat')
+            ->setParameter('etat', 'Archivée')
+            ->orderBy('s.dateHeureDebut', 'DESC');
+
         $user = $security->getUser();
 
         $nomDeSortie = $recherche->getNom();
