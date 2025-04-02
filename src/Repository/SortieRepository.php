@@ -68,6 +68,7 @@ class SortieRepository extends ServiceEntityRepository
         $sortiesPassees = $recherche->getDateDebut();
         $lieu = $recherche->getLieu();
 
+
         //Recherche par nom de Sortie
         if ($nomDeSortie) {
             $qB->andWhere('s.nomSortie LIKE :nom')
@@ -80,7 +81,7 @@ class SortieRepository extends ServiceEntityRepository
         }
 
         //Recherche si je suis inscrit a la sortie
-        if ($user instanceof Participant) {
+        if ($inscrit) {
             $qB->andWhere(':participant MEMBER OF s.participants')
                 ->setParameter('participant', $user);
         }
@@ -98,12 +99,12 @@ class SortieRepository extends ServiceEntityRepository
 //                ->setParameter('dateDeSortie', $dateDeSortieString);
 //        }
 //
-        // Recherche des sorties passées
-        if ($sortiesPassees) {
-            $now = new \DateTimeImmutable();
-            $qB->andWhere('s.dateHeureDebut < :now')
-                ->setParameter('now', $now);
-        }
+//        // Recherche des sorties passées
+//        if ($sortiesPassees) {
+//            $now = new \DateTimeImmutable();
+//            $qB->andWhere('s.dateHeureDebut < :now')
+//                ->setParameter('now', $now);
+//        }
 
         //Recherche par lieu de sorties
         if ($lieu) {
