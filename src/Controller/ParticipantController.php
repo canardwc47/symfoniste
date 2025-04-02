@@ -137,7 +137,7 @@ final class ParticipantController extends AbstractController
 
         // Affichage du formulaire pour modifier le participant
         return $this->render('participant/modifier.html.twig', [
-            'participants' => $participant,
+            'participant' => $participant,
             'form' => $participantForm,
         ]);
     }
