@@ -20,9 +20,11 @@
                 </li>
 
                 {% if app.user %}
+                {% if is_granted("ROLE_ADMIN") %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('sortie_liste') }}"
                            title="Villes">Villes</a>
+                {% endif %}
                     </li>
 
                     <li class="nav-item">
@@ -36,9 +38,15 @@
 
                     <li class="nav-item">
                     {% if is_granted("ROLE_ADMIN") %}
-                        <a class="btn btn-sm btn-outline-primary" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
-                    {% endif %}
                         <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
+                    {% endif %}
+                    </li>
+
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_liste') }}"
+                           title="Sites">Sites</a>
+                    {% endif %}
                     </li>
 
                     <li class="nav-item">
@@ -47,23 +55,16 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}"
-                           title="Sign out">Sign out</a>
+                           title="Sign out">Se déconnecter</a>
                     </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('sortie_liste') }}"
-                           title="Sites">Admin : Sites</a>
-                    </li>
-
-
 
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_login') }}"
                            title="Sign in">Se connecter</a>
                     </li>
-
                 {% endif %}
+
             </ul>
         </div>
     </div>

@@ -10,7 +10,8 @@
         <tr>
             <th>Image</th>
             <td>
-                <img src="{{ asset('image/' ~ participant.filename) }}" alt="Image de profil" width="150" height="150">
+                <!-- Correct if the images are stored in 'public/img/photoProfil' -->
+                <img src="{{ asset('img/photoProfil' ~ participant.filename) }}" alt="Image de profil" width="150" height="150">
             </td>
         </tr>
         <tr>
