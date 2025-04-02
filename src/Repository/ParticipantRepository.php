@@ -105,5 +105,4 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
         // 1. persist the new password in the user storage
         // 2. update the $user object with $user->setPassword($newHashedPassword);
     }
-
 }

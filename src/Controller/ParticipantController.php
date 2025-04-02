@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 #[Route('/participant', name: 'participant_')]
@@ -30,6 +31,7 @@ final class ParticipantController extends AbstractController
 
 
     #[Route('/ajouter', name: 'ajouter', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
                         FileUploader $fileUploader,
@@ -40,6 +42,10 @@ final class ParticipantController extends AbstractController
         $participant = new Participant();
         $participantForm = $this->createForm(ParticipantType::class, $participant);
         $participantForm->handleRequest($request);
+
+/*        if (!$this->isGranted("ROLE_ADMIN")){
+            throw $this->createAccessDeniedException("Vous n'avez pas les droits pour créer un participant");
+        }*/
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
 

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau lieu{% endblock %}
+
+{% block body %}
+    <h1>Crée un nouveau lieu</h1>
+
+    {{ form_start(formLieu) }}
+
+    {{ form_widget(formLieu) }}
+
+
+    <button class="btn">{{ button_label|default('Sauvegarder') }}</button>
+    {{ form_end(formLieu) }}
+
+
+    <a href="{{ path('sortie_liste') }}">Retour</a>
+{% endblock %}
