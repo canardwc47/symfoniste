@@ -80,7 +80,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-
     public function getNom(): ?string
     {
         return $this->nom;
@@ -89,7 +88,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -101,7 +99,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
-
         return $this;
     }
 
@@ -113,7 +110,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(?string $telephone): static
     {
         $this->telephone = $telephone;
-
         return $this;
     }
 
@@ -125,7 +121,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -137,7 +132,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPseudo(string $pseudo): static
     {
         $this->pseudo = $pseudo;
-
         return $this;
     }
 
@@ -149,7 +143,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setMdp(string $mdp): static
     {
         $this->mdp = $mdp;
-
         return $this;
     }
 
@@ -161,7 +154,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAdministrateur(bool $administrateur): static
     {
         $this->administrateur = $administrateur;
-
         return $this;
     }
 
@@ -173,7 +165,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setActif(bool $actif): static
     {
         $this->actif = $actif;
-
         return $this;
     }
 
@@ -197,7 +188,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeSorty(Sortie $sorty): static
     {
         $this->sorties->removeElement($sorty);
-
         return $this;
     }
 
