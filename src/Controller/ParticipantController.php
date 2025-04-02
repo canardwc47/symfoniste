@@ -44,7 +44,8 @@ final class ParticipantController extends AbstractController
         $participantForm->handleRequest($request);
 
 /*        if (!$this->isGranted("ROLE_ADMIN")){
-            throw $this->createAccessDeniedException("Vous n'avez pas les droits pour créer un participant");
+            throw $this->createAccessDeniedExce
+ption("Vous n'avez pas les droits pour créer un participant");
         }*/
 
         if ($participantForm->isSubmitted() && $participantForm->isValid()) {
