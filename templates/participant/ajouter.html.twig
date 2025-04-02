@@ -11,7 +11,8 @@
 
     {{ form_end(form) }}
 
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    {#<button class="btn">{{ button_label|default('Enregistrer') }}</button>#}
+    <button type="submit" class="btn btn-sm btn-success">Enregistrer</button>
 
     <a href="#">Retour</a>
 {% endblock %}
