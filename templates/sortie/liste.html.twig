@@ -59,11 +59,7 @@
                 {% for sortie in sorties %}
                     {% if sorties %}
                         {% if sortie.etat.libelle != 'Créée' or (sortie.etat.libelle == 'Créée' and sortie.organisateur == app.user) %}
-                            <tr class="sortie"
-                                data-id="{{ sortie.id }}"
-                                data-inscrit="{% if sortie.participants.contains(app.user) %}1{% else %}0{% endif %}"
-                                data-non-inscrit="{% if sortie.participants.contains(app.user) %}0{% else %}1{% endif %}"
-                                data-organisateur="{% if sortie.organisateur == app.user %}1{% else %}0{% endif %}">
+                            <tr class="sortie">
 
                                 <td>{{ sortie.nomSortie }} ({{ sortie.id }})</td>
                                 <td>{{ sortie.dateHeureDebut.format('d/m/Y à H:i') }}</td>
@@ -99,7 +95,7 @@
                                     <a href="{{ path('sortie_detail', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-primary">Afficher</a>
 
                                     {% if app.user %}
-                                        {% if sortie.etat.libelle in ['Ouverte', 'Clôturée'] and (sortie.etat.libelle != 'Clôturée' or sortie.participants.contains(app.user)) %}
+                                        {% if sortie.etat.libelle in ['Ouverte', 'Clôturée'] and (sortie.etat.libelle != 'Clôturée' or sortie.participants.contains(app.user)) and sortie.organisateur != app.user%}
                                             {% if sortie.participants.contains(app.user) %}
                                                 <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-desister" data-sortie-id="{{ sortie.id }}">Se désister</a>
                                             {% else %}
