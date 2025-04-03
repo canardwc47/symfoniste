@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Participant;
 use App\Form\ParticipantType;
 use App\Repository\ParticipantRepository;
+use App\Repository\SiteRepository;
 use App\Service\FileUploader;
 use App\Services\Uploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +28,8 @@ final class ParticipantController extends AbstractController
     public function add(Request                $request,
                         EntityManagerInterface $entityManager,
                         FileUploader $fileUploader, // Injection du service FileUploader
-                        UserPasswordHasherInterface $userPasswordHasher
+                        UserPasswordHasherInterface $userPasswordHasher,
+                        SiteRepository $siteRepository
     ): Response
     {
         $participant = new Participant();
@@ -52,6 +54,9 @@ ption("Vous n'avez pas les droits pour créer un participant");
             $plainPassword = $participant->getMdp();
             $hashedPassword = $userPasswordHasher->hashPassword($participant, $plainPassword);
             $participant->setMdp($hashedPassword);
+
+            $site = $siteRepository->findOneBy([]);
+            $participant->setSite($site);
 
             $entityManager->persist($participant);
             $entityManager->flush();
