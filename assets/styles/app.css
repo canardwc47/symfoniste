@@ -15,6 +15,12 @@ body {
     flex-direction: column;
     justify-content: space-between;
     min-height: 100vh;
+
+
+}
+.container-fluid {
+    width: 100%; /* La container-fluid occupe toute la largeur */
+    padding: 0; /* Enlève le padding par défaut */
 }
 
 /* Navbar */
@@ -31,11 +37,13 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
+
 }
 
 img {
     border-radius: 50px;
 }
+
 
 nav ul {
     list-style-type: none;
@@ -85,6 +93,10 @@ footer {
     flex-direction: column;
     justify-content: flex-start; /* Contenu aligné vers le haut */
     flex: 1; /* Permet au contenu de prendre toute la hauteur disponible */
+}
+
+header{
+    background-color: #4b5ae4;
 }
 
 h1, h2 {
@@ -222,9 +234,6 @@ a {
     font-size: 0.85rem;
     padding: 5px 10px;
 }
-
-/*CSS pour le tableau Profil d'utilisateur*/
-
 .table-profil {
     width: 45%;
     margin: 0;
@@ -258,40 +267,7 @@ a {
     color: #333;
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-    nav .nav-link {
-        font-size: large;
-        padding: 8px;
-    }
-
-    .table th, .table td {
-        padding: 8px 12px;
-    }
-
-    .table-responsive {
-        max-height: 300px;
-    }
-
-    h1, h2 {
-        font-size: 40px;
-    }
-
-    .container {
-        padding: 10px;
-    }
-
-    .btn-outline-secondary {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-    }
-
-    nav ul {
-        flex-direction: column;
-        gap: 10px;
-    }
-}
-
+/* Media Queries pour les écrans de taille inférieure à 576px */
 @media (max-width: 576px) {
     nav {
         height: auto;
@@ -310,5 +286,73 @@ a {
     .btn-sm {
         font-size: 0.75rem;
         padding: 4px 8px;
+    }
+
+    /* Améliore l'adaptation des images */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Adaptation des formulaires */
+    input, textarea, select {
+        width: 100%; /* Permet aux éléments de formulaire de s'étirer sur toute la largeur */
+    }
+    /* Conteneur responsive pour le tableau */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto; /* Permet le défilement horizontal si nécessaire */
+        -webkit-overflow-scrolling: touch; /* Améliore le défilement sur iOS */
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;  /* Espace de 10px entre les lignes (verticalement) */
+
+    }
+    .table td {
+        padding: 15px;  /* Augmente l'espace à l'intérieur des cellules */
+        border: 2px solid rgba(75, 90, 228, 0.38);
+    }
+
+    .table th, table tr{
+        padding: 15px;  /* Augmente l'espace à l'intérieur des cellules */
+        text-align: left;
+    }
+    /* Styles pour les écrans plus petits */
+    @media (max-width: 768px) {
+        .table thead {
+            display: none; /* Masque l'en-tête sur les petits écrans */
+        }
+
+        .table, .table tbody, .table tr, .table td {
+            display: block; /* Chaque ligne devient un bloc */
+            width: 100%;
+        }
+
+        .table tr {
+            margin-bottom: 10px;  /* Ajoute un espace de 10px entre les lignes */
+        }
+
+        .table td {
+            position: relative;
+            padding-left: 50%; /* Espace pour le label (voir plus bas) */
+        }
+
+        .table td::before {
+            content: attr(data-label); /* Ajoute un label avant chaque cellule */
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .table th, .table td {
+                font-size: 0.85rem; /* Réduit la taille des textes sur petits écrans */
+                padding: 8px 10px; /* Réduit les espacements pour que le contenu tienne mieux */
+            }
+        }
     }
 }
