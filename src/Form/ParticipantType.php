@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -34,12 +35,24 @@ class ParticipantType extends AbstractType
                     ])
                 ],
             ])
-                ->add('nom')
-                ->add('prenom')
-                ->add('telephone')
-                ->add('email')
-                ->add('pseudo')
-                ->add('mdp')
+            ->add('nom', null, [
+                'label' => 'Nom'
+            ])
+            ->add('prenom', null, [
+                'label' => 'Prénom'
+            ])
+            ->add('telephone', null, [
+                'label' => 'Téléphone'
+            ])
+            ->add('email', null, [
+                'label' => 'Email'
+            ])
+            ->add('pseudo', null, [
+                'label' => 'Pseudo'
+            ])
+            ->add('mdp', PasswordType::class, [
+                'label' => 'Mot de passe'
+            ])
             ;
                 #->add('administrateur')
                 #->add('actif')
