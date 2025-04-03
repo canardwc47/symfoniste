@@ -41,34 +41,33 @@ final class SortieController extends AbstractController
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
         $rechercheForm->handleRequest($request);
 
-       // if ($rechercheForm->isSubmitted() ) {
+        $sorties = [];
+
+        if ($rechercheForm->isSubmitted()) {
+            if ($rechercheForm->isValid()) {
+                // Formulaire valide, effectuer la recherche
+                $sorties = $sortieRepository->rechercheSortie($recherche, $security);
+
+                // Ajouter un message si aucune sortie n'est trouvée
+                if (empty($sorties)) {
+                    $this->addFlash('info', 'Aucune sortie ne correspond à vos critères de recherche.');
+                }
+            } else {
+                // Formulaire invalide, afficher un message d'erreur
+                $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire de recherche.');
+
+                // Récupérer toutes les sorties comme fallback
+                $sorties = $sortieRepository->findAll();
+            }
+        } else {
+            // Formulaire non soumis, récupérer toutes les sorties sauf archivées
             $sorties = $sortieRepository->rechercheSortie($recherche, $security);
-//        } else {
-//            $sorties = $sortieRepository->findAll();
-//        }
+        }
 
         return $this->render('sortie/liste.html.twig', [
             'sorties' => $sorties,
             'rechercheForm' => $rechercheForm->createView()
         ]);
-    }
-
-    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function inscrire(
-        int                    $id,
-        SortieService          $sortieService,
-        EntityManagerInterface $em
-    ): Response
-    {
-        $result = $sortieService->inscription($id);
-        if ($result === "Inscription réussie.") {
-            $this->addFlash('success', $result);
-            $sortieService->majSorties();
-            $em->clear();
-        } else {
-            $this->addFlash('warning', $result);
-        }
-        return $this->redirectToRoute('sortie_liste');
     }
 
     #[Route('/sortie/{id}/desister', name: 'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
