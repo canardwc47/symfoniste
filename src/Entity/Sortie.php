@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
@@ -18,33 +19,67 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le nom de la sortie est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le nom de la sortie doit contenir au moins 2 caractères',
+        maxMessage: 'Le nom de la sortie ne peut pas dépasser 50 caractères' )]
     private ?string $nomSortie = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'La date de la sortie est obligatoire')]
+    #[Assert\GreaterThan(
+        value: 'today',
+        message: 'La date de la sortie doit être dans le futur'
+    )]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank (message: 'La durée est obligatoire')]
+    #[Assert\Positive(message: 'La durée doit être un nombre positif')]
     private ?int $duree = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'La date limite d\'inscription est obligatoire')]
+    #[Assert\LessThan(
+        propertyPath: 'dateHeureDebut',
+        message: 'La date limite d\'inscription doit être avant la date de début de la sortie'
+    )]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: 'La date limite d\'inscription doit être aujourd\'hui ou dans le futur'
+    )]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le nombre maximum d\'inscriptions est obligatoire')]
+    #[Assert\Positive(message: 'Le nombre d\'inscriptions doit être supérieur à 0')]
+    #[Assert\LessThan(value: 1000, message: 'Le nombre maximum d\'inscriptions ne peut pas dépasser 999')]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description de la sortie est obligatoire')]
+    #[Assert\Length(
+        min: 10,
+        max: 250,
+        minMessage: 'La description de la sortie doit contenir au moins 10 caractères',
+        maxMessage: 'La description de la sortie ne peut pas dépasser 50 caractères' )]
     private ?string $infosSortie = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'L\'état de la sortie doit être défini')]
     private ?Etat $etat = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Le site de la sortie doit être défini')]
     private ?Site $site = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Le lieu de la sortie doit être défini')]
     private ?Lieu $lieu = null;
 
     /**
@@ -55,6 +90,7 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sortiesOrga')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'L\'organisateur de la sortie doit être défini')]
     private ?Participant $organisateur = null;
 
     public function __construct()
