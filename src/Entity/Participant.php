@@ -7,14 +7,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use Faker\Core\File;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PSEUDO', fields: ['pseudo'])]
-#[UniqueEntity(fields: ['pseudo'], message: 'There is already a pseudo with this username')]
-#[UniqueEntity(fields: ['email'], message: 'There is already a email with this username')]
+#[UniqueEntity(fields: ['pseudo'], message: 'Ce pseudo est déjà utilisé')]
+#[UniqueEntity(fields: ['email'], message: 'Cette adresse email est déjà utilisée')]
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -23,32 +25,63 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le nom doit contenir au moins 2 caractères',
+        maxMessage: 'Le nom ne peut pas dépasser 50 caractères' )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le prénom doit contenir au moins 2 caractères',
+        maxMessage: 'Le prénom ne peut pas dépasser 50 caractères' )]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^(0|\+33)[1-9]([-. ]?[0-9]{2}){4}$/',
+        message: 'Le numéro de téléphone n\'est pas valide')]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire')]
+    #[Assert\Email(message: 'L\'email {{ value }} n\'est pas valide')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Le pseudo est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le pseudo doit contenir au moins 2 caractères',
+        maxMessage: 'Le pseudo ne peut pas dépasser 50 caractères' )]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 6)]
+/*    #[Assert\Regex(
+        pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/',
+        message: 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre'
+    )]*/
     private ?string $mdp = null;
 
     #[ORM\Column]
-    private ?bool $administrateur = null;
+    #[Assert\Type(type: 'bool')]
+    private ?bool $administrateur = false;
 
     #[ORM\Column]
-    private ?bool $actif = null;
+    #[Assert\Type(type: 'bool')]
+    private ?bool $actif = true;
 
-    // Ajouter la propriété roles
+
     #[ORM\Column(length: 255, nullable: true)]
-    private array $roles = [];  // Valeur par défaut
+    private array $roles = [];
 
     /**
      * @var Collection<int, Sortie>
@@ -67,6 +100,12 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Site $site = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+        maxSizeMessage: 'L\'image ne doit pas dépasser 1Mo',
+        mimeTypesMessage: 'Veuillez télécharger une image valide (JPEG ou PNG)'
+    )]
     private ?string $filename = null;
 
     public function __construct()

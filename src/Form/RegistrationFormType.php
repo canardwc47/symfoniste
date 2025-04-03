@@ -22,9 +22,9 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('pseudo')
-            ->add('prenom')
+            ->add('prénom')
             ->add('nom')
-            ->add('telephone')
+            ->add('téléphone')
             ->add('email')
             ->add('site', EntityType::class, [
                 'class' => Site::class,
@@ -53,6 +53,13 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('site', EntityType::class, [
+                'class' => Site::class,
+                'choice_label' => 'nom', // Le champ qui s'affichera dans le select
+                'placeholder' => 'Sélectionnez un site',
+                'required' => false, // Empêche l'envoi du formulaire sans sélection
+            ])
+
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [

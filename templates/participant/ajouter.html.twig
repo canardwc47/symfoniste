@@ -7,12 +7,14 @@
 
     {{ form_start(form) }}
 
+    {{ form_errors(form) }}
     {{ form_widget(form) }}
 
-    {{ form_end(form) }}
-
-    {#<button class="btn">{{ button_label|default('Enregistrer') }}</button>#}
     <button type="submit" class="btn btn-sm btn-success">Enregistrer</button>
 
     <a href="#">Retour</a>
+
+    {{ form_end(form) }}
+
+
 {% endblock %}
