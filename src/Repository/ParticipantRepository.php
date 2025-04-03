@@ -111,12 +111,15 @@ class ParticipantRepository extends ServiceEntityRepository implements UserProvi
                 's.dateHeureDebut AS sortie_date',
                 's.nomSortie AS sortie_nom',
                 'o.pseudo AS sortie_organisateur',
+                'o.id AS sortie_organisateur_id',
                 'l.nomLieu AS lieu_nom',
                 'v.nom AS ville_nom',
-                'e.libelle AS etat_libelle'
+                'e.libelle AS etat_libelle',
+                'c.nomSite AS site_nom'
             )
-            ->join('p.sorties', 's')
+            ->leftjoin('p.sorties', 's')
             ->join('s.organisateur', 'o')
+            ->join('s.site', 'c')
             ->join('s.etat', 'e')
             ->join('s.lieu', 'l')
             ->join('l.ville', 'v')
