@@ -104,7 +104,7 @@
                                             {% if sortie.participants.contains(app.user) %}
                                                 <a href="{{ path('sortie_desister', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-desister" data-sortie-id="{{ sortie.id }}">Se désister</a>
                                             {% else %}
-                                                <a href="{{ path('sortie_creer', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-inscrire" data-sortie-id="{{ sortie.id }}">S'inscrire</a>
+                                                <a href="{{ path('sortie_inscrire', {'id': sortie.id}) }}" class="btn btn-sm btn-outline-success btn-inscrire" data-sortie-id="{{ sortie.id }}">S'inscrire</a>
                                             {% endif %}
                                         {% endif %}
 

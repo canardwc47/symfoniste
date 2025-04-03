@@ -70,6 +70,24 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    #[Route('/sortie/{id}/inscrire', name: 'sortie_inscrire', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function inscrire(
+        int                    $id,
+        SortieService          $sortieService,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $result = $sortieService->inscription($id);
+        if ($result === "Inscription réussie.") {
+            $this->addFlash('success', $result);
+            $sortieService->majSorties();
+            $em->clear();
+        } else {
+            $this->addFlash('warning', $result);
+        }
+        return $this->redirectToRoute('sortie_liste');
+    }
+
     #[Route('/sortie/{id}/desister', name: 'sortie_desister', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function desister(
         int                    $id,
