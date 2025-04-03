@@ -57,6 +57,7 @@
         <th>Date de la sortie</th>
         <th>Nom de la sortie</th>
         <th>Organisateur</th>
+        <th>Site organisateur</th>
         <th>Ville</th>
         <th>Lieu</th>
         <th>Etat de la sortie</th>
@@ -69,7 +70,8 @@
         <tr>
             <td>{{ detailSortie.sortie_date.format('d/m/Y à H:i') }} </td>
             <td>{{ detailSortie.sortie_nom }}</td>
-            <td>{{ detailSortie.sortie_organisateur }}</td>
+            <td><a type="button" class="btn btn-outline-secondary" href="{{ path('participant_detail', {'id': detailSortie.sortie_organisateur_id}) }}">{{ detailSortie.sortie_organisateur }}</td>
+            <td>{{ detailSortie.site_nom }}</td>
             <td>{{ detailSortie.ville_nom }}</td>
             <td>{{ detailSortie.lieu_nom }}</td>
             <td>{{ detailSortie.etat_libelle }}</td>

@@ -76,13 +76,14 @@ ption("Vous n'avez pas les droits pour créer un participant");
     #[Route('/detail/{id}', name: 'detail', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function detail(
         Participant $participant,
+        ParticipantRepository $participantRepository,
         Security $security,
         EntityManagerInterface $em
     ): Response
     {
         if ($security->getUser()) {
 
-            $detailSorties = $em->getRepository(Participant::class)->detailSortiesParticipant($participant->getId());
+            $detailSorties = $participantRepository->detailSortiesParticipant($participant->getId());
 
         return $this->render('participant/detail.html.twig', [
             'detailSorties' => $detailSorties,

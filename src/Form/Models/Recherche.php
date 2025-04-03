@@ -4,13 +4,21 @@ namespace App\Form\Models;
 
 use App\Entity\Lieu;
 use App\Entity\Site;
-use phpDocumentor\Reflection\Types\Boolean;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Recherche
 {
+    #[Assert\Length(max: 50, maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères")]
     private ?string $nom = null;
+
+    #[Assert\Type("\DateTimeImmutable", message: "La date de début doit être une date valide")]
     private ?\DateTimeImmutable $dateDebut = null;
 
+    #[Assert\Type("\DateTimeImmutable", message: "La date de fin doit être une date valide")]
+    #[Assert\Expression(
+        "this.getDateDebut() === null || this.getDateFin() === null || this.getDateDebut() <= this.getDateFin()",
+        message: "La date de fin doit être postérieure à la date de début"
+    )]
     private ?\DateTimeImmutable $dateFin = null;
 
 
@@ -114,5 +122,4 @@ class Recherche
     {
         $this->participant = $participant;
     }
-
 }
