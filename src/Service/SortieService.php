@@ -121,36 +121,46 @@ class SortieService
         $etatRepository = $this->etatRepository;
         $currentDate = new \DateTimeImmutable();
         $sorties = $this->sortieRepository->findAll();
+        $etats = [
+            'Ouverte' => $etatRepository->findOneBy(['libelle' => 'Ouverte']),
+            'Clôturée' => $etatRepository->findOneBy(['libelle' => 'Clôturée']),
+            'Activité en cours' => $etatRepository->findOneBy(['libelle' => 'Activité en cours']),
+            'Passée' => $etatRepository->findOneBy(['libelle' => 'Passée']),
+            'Archivée' => $etatRepository->findOneBy(['libelle' => 'Archivée']),
+        ];
 
         foreach ($sorties as $sortie) {
             $etatOrig = $sortie->getEtat()->getLibelle();
             if (
-                ($sortie->getDateLimiteInscription() >= $currentDate && count($sortie->getParticipants())<=$sortie->getNbInscriptionsMax())
+                ($sortie->getDateLimiteInscription() >= $currentDate && count($sortie->getParticipants())<$sortie->getNbInscriptionsMax())
                 && $etatOrig == 'Clôturée' ) {
-                $etat = $etatRepository->findOneBy(['libelle' => 'Ouverte']);
-                $sortie->setEtat($etat);
+                $sortie->setEtat($etats['Ouverte']);
+                $em->persist($sortie);
+                continue;
             }
             if (($sortie->getDateLimiteInscription() <= $currentDate || count($sortie->getParticipants())>=$sortie->getNbInscriptionsMax())
                 && $etatOrig == 'Ouverte' ) {
-                $etat = $etatRepository->findOneBy(['libelle' => 'Clôturée']);
-                $sortie->setEtat($etat);
+                $sortie->setEtat($etats['Clôturée']);
+                $em->persist($sortie);
+                continue;
             }
             if ($sortie->getDateHeureDebut() <= $currentDate && $etatOrig == 'Clôturée' ) {
-                $etat = $etatRepository->findOneBy(['libelle' => 'Activité en cours']);
-                $sortie->setEtat($etat);
+                $sortie->setEtat($etats['Activité en cours']);
+                $em->persist($sortie);
+                continue;
             }
-            $dateDebutPlusUnJour = $sortie->getDateHeureDebut()->modify('+1 day');
+            $dateDebutPlusUnJour = (clone $sortie->getDateHeureDebut())->modify('+1 day');
             if ($dateDebutPlusUnJour <= $currentDate && $etatOrig == 'Activité en cours' ) {
-                $etat = $etatRepository->findOneBy(['libelle' => 'Passée']);
-                $sortie->setEtat($etat);
+                $sortie->setEtat($etats['Passée']);
+                $em->persist($sortie);
+                continue;
             }
 
-            $dateDebutPlusUnMois = $sortie->getDateHeureDebut()->modify('+1 month');
+            $dateDebutPlusUnMois = (clone $sortie->getDateHeureDebut())->modify('+1 month');
             if ($dateDebutPlusUnMois <= $currentDate && ($etatOrig == 'Passée' || $etatOrig == 'Annulée'))  {
-                $etat = $etatRepository->findOneBy(['libelle' => 'Archivée']);
-                $sortie->setEtat($etat);
+                $sortie->setEtat($etats['Archivée']);
+                $em->persist($sortie);
             }
-            $em->persist($sortie);
 
         }
         $em->flush();

@@ -36,7 +36,8 @@ final class SortieController extends AbstractController
         Security $security,
         SortieService $sortieService,
     ): Response {
-
+        $sortieService->majSorties();
+        $em->clear();
         $recherche = new Recherche();
         $rechercheForm = $this->createForm(RechercheType::class, $recherche);
         $rechercheForm->handleRequest($request);

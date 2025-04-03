@@ -20,34 +20,31 @@
                     </li>
 
                     {% if app.user %}
-                        {% if is_granted("ROLE_ADMIN") %}
-                            <li class="nav-item">
-                            <a class="nav-link" href="{{ path('sortie_liste') }}"
-                               title="Villes">Villes</a>
-                        {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('lieu_index') }}"
+                           title="Lieux">Lieux</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('sortie_creer') }}"
+                           title="Create">Créer une sortie</a>
+                    </li>
+
+                    {% if is_granted("ROLE_ADMIN") %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('lieu_index') }}"
-                               title="Lieux">Lieux</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('sortie_creer') }}"
-                               title="Create">Créer une sortie</a>
-                        </li>
-
-                        <li class="nav-item">
-                            {% if is_granted("ROLE_ADMIN") %}
-                                <a class="nav-link" href="{{ path('participant_ajouter') }}" title="AddParticipant">Ajouter participant</a>
-                            {% endif %}
-                        </li>
-
-                        {% if is_granted("ROLE_ADMIN") %}
-                            <li class="nav-item">
                             <a class="nav-link" href="{{ path('sortie_liste') }}"
                                title="Sites">Sites</a>
-                        {% endif %}
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('sortie_liste') }}"
+                               title="Villes">Villes</a>
+                        </li>
+                        {% endif %}
 
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('participant_detail', {'id': app.user.id}) }}" title="Profil">Mon profil</a>
